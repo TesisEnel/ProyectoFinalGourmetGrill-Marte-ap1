@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProyectoFinalGourmetGrill", "ProyectoFinalGourmetGrill\ProyectoFinalGourmetGrill.csproj", "{2479CE6C-65E1-42BE-8A81-0A3A4CD672EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProyectoFinalGourmetGrill", "ProyectoFinalGourmetGrill\ProyectoFinalGourmetGrill.csproj", "{2479CE6C-65E1-42BE-8A81-0A3A4CD672EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{21E9D4D5-2698-4AE7-8B5E-6585C08D470A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{2479CE6C-65E1-42BE-8A81-0A3A4CD672EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2479CE6C-65E1-42BE-8A81-0A3A4CD672EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2479CE6C-65E1-42BE-8A81-0A3A4CD672EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21E9D4D5-2698-4AE7-8B5E-6585C08D470A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21E9D4D5-2698-4AE7-8B5E-6585C08D470A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21E9D4D5-2698-4AE7-8B5E-6585C08D470A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21E9D4D5-2698-4AE7-8B5E-6585C08D470A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
