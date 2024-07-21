@@ -5,8 +5,12 @@ using Shared.Models;
 
 namespace GourmetGrillApi.api.DAL;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+
+    }
     public DbSet<CategoriaProductos> CategoriaProductos { get; set; }
     public DbSet<Productos> Productos { get; set; }
     public DbSet<Ordenes> Ordenes { get; set; }
