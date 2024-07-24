@@ -38,8 +38,6 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-
-
 // Services
 builder.Services.AddScoped<IServerAsp<ApplicationUser>, UsersService>();
 builder.Services.AddScoped<IServerAsp<IdentityRole>, RolesService>();
@@ -65,11 +63,11 @@ builder.Services.AddSingleton<System.TimeProvider>(System.TimeProvider.System);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
