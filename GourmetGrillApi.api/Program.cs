@@ -55,7 +55,12 @@ builder.Services.AddScoped<ProductosService>();
 builder.Services.AddScoped<MetodoPagos>();
 builder.Services.AddScoped<UsersService>();
 
+// TimeProvider service
+builder.Services.AddSingleton<System.TimeProvider>(System.TimeProvider.System);
 
+/*System.TimeProvider es un nuevo tipo en .NET que proporciona una abstracción sobre las fuentes 
+ * de tiempo del sistema. Esta abstracción puede ser útil para pruebas y para obtener 
+ * diferentes representaciones del tiempo.*/
 
 var app = builder.Build();
 
