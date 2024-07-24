@@ -18,6 +18,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// Data Protection
+builder.Services.AddDataProtection();
+
+/*El método builder.Services.AddDataProtection() agrega los servicios necesarios para la protección de datos a la colección de
+ * servicios de ASP.NET Core. Este mecanismo es fundamental para varias funcionalidades de seguridad en ASP.NET Core, como la 
+ * protección de cookies de autenticación, tokens antifalsificación y almacenamiento seguro de datos sensibles.*/
 
 // Add HttpClient
 builder.Services.AddScoped(a => new HttpClient
