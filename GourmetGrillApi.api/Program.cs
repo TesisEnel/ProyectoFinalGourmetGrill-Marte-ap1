@@ -1,5 +1,8 @@
 using GourmetGrillApi.api.DAL;
 using Microsoft.EntityFrameworkCore;
+using ProyectoFinalGourmetGrill.Services;
+using Shared.Interfaces;
+using Shared.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,8 @@ var ConStr = builder.Configuration.GetConnectionString("ConStr") ?? throw new In
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(ConStr));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+//Servicios
+builder.Services.AddScoped<IServer<Productos>, ProductosService>();
 
 var app = builder.Build();
 
