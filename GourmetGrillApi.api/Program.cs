@@ -31,6 +31,13 @@ builder.Services.AddScoped(a => new HttpClient
     BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!)
 });
 
+// Identity services
+builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
 
 
 // Services
