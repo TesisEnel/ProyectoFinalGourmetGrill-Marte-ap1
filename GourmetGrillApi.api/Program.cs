@@ -9,9 +9,7 @@ using Shared.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -19,7 +17,17 @@ var ConStr = builder.Configuration.GetConnectionString("ConStr") ?? throw new In
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(ConStr));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-//Servicios
+
+
+// Add HttpClient
+builder.Services.AddScoped(a => new HttpClient
+{
+    BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!)
+});
+
+
+
+// Services
 builder.Services.AddScoped<IServerAsp<ApplicationUser>, UsersService>();
 builder.Services.AddScoped<IServerAsp<IdentityRole>, RolesService>();
 builder.Services.AddScoped<IServerAsp<IdentityUserRole<string>>, UserRolesService>();
@@ -34,6 +42,8 @@ builder.Services.AddScoped<ProductosService>();
 builder.Services.AddScoped<MetodoPagos>();
 builder.Services.AddScoped<UsersService>();
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -44,9 +54,6 @@ var app = builder.Build();
 //}
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
