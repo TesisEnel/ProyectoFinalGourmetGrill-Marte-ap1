@@ -11,24 +11,26 @@ public class ProductosService(ApplicationDbContext _contexto) : IServer<Producto
 {
     public async Task<Productos> GetObject(int id)
     {
-        return (await _contexto.Productos.FindAsync(id))!;
+        return await _contexto.Productos.FindAsync(id);
     }
 
     public async Task<List<Productos>> GetAllObject()
     {
-        return await _contexto.Productos.ToListAsync();
+        return await _contexto.Productos
+            .Include(p => p.CategoriaId)
+            .ToListAsync();
     }
 
-    public async Task<Productos> AddObject(Productos type)
+    public async Task<Productos> AddObject(Productos producto)
     {
-        _contexto.Productos.Add(type);
+        _contexto.Productos.Add(producto);
         await _contexto.SaveChangesAsync();
-        return type;
+        return producto;
     }
 
-    public async Task<bool> UpdateObject(Productos type)
+    public async Task<bool> UpdateObject(Productos producto)
     {
-        _contexto.Entry(type).State = EntityState.Modified;
+        _contexto.Entry(producto).State = EntityState.Modified;
         return await _contexto.SaveChangesAsync() > 0;
     }
 
@@ -54,4 +56,13 @@ public class ProductosService(ApplicationDbContext _contexto) : IServer<Producto
             .Where(expression)
             .ToListAsync();
     }
+
+    //public async Task<string?> GetCategoriaNombre(int productoId)
+    //{
+    //    var producto = await _contexto.Productos
+    //        .Include(p => p.CategoriaId)
+    //        .FirstOrDefaultAsync(p => p.ProductoId == productoId);
+
+    //    return producto.CategoriaId.;
+    //}
 }
