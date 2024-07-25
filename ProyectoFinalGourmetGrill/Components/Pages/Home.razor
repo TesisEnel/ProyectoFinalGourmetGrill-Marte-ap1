@@ -1,56 +1,39 @@
 ﻿@page "/"
+@using Shared.Interfaces
+@using Shared.Models
 
 <PageTitle>Gourmet Grill</PageTitle>
-@*Body*@
-<div class="card-body">
-    <div class="container">
-        @*Mini Menu*@
-        <div class="row">
-            @*Primera Hambuerguesa*@
-            <div class="col-md-4 product-card">
-                <div class="card borderCard">
-                    <img src="/Imagenes/Pizza Burger.jpg" class="card-img-top borderBurguer" alt="Pizza Burguer">
-                    <div class="card-body">
-                        <h5 class="card-title text-center"><strong>Intensa</strong></h5>
-                        <p class="card-text">120gr de carne, mermelada de tomate chonto, cebolla encurtida, dip de tres quesos con tocineta</p>
-                        <div class="text-center">
-                            <a href="#" class="btn btn-outline-primary">Ver producto</a>
+
+<div class="container">
+    <div class="row">
+        @if (productos != null && productos.Any())
+        {
+            // Limitar a los primeros 3 productos
+            var productosLimitados = productos.Take(3);
+
+            foreach (var producto in productosLimitados)
+            {
+                <div class="col-md-4 product-card">
+                    <div class="card borderCard">
+                        <img src="@producto.ImagenUrl" class="card-img-top borderBurguer" alt="@producto.Nombre">
+                        <div class="card-body">
+                            <h5 class="card-title text-center"><strong>@producto.Nombre</strong></h5>
+                            <p class="card-text">@producto.Descripcion</p>
+                            <div class="text-center">
+                                <a href="#" class="btn btn-outline-primary">Ver producto</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            @*Segunda Hambuerguesa*@
-            <div class="col-md-4 product-card">
-                <div class="card borderCard">
-                    <img src="/Imagenes/Classic Burguer.jpg" class="card-img-top borderBurguer" alt="Classic Burguer">
-                    <div class="card-body">
-                        <h5 class="card-title text-center"><strong>La Cremosa</strong></h5>
-                        <p class="card-text">120gr de carne, croqueta de queso apanada, mermelada de tomate chonto y cebolla encurtida</p>
-                        <div class="text-center">
-                            <a href="#" class="btn btn-outline-primary">Ver producto</a>
-                        </div>
-                    </div>
-                </div>
-            </div>  
-            @*Tercera Hambuerguesa*@
-            <div class="col-md-4 product-card">
-                <div class="card borderCard">
-                    <img src="/Imagenes/Ultimate Crack Burger.jpg" class="card-img-top borderBurguer" alt="Ultimate Crack Burger">
-                    <div class="card-body">
-                        <h5 class="card-title text-center"><strong>La F&oacute;rmula</strong></h5>
-                        <p class="card-text">120gr de carne brangus, lechuga, tomate, cebolla, mermelada de tomate chonto, unas cuantas</p>
-                        <div class="text-center">
-                            <a href="#" class="btn btn-outline-primary">Ver producto</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            }
+        }
+        else
+        {
+            <p>Loading...</p>
+        }
     </div>
 </div>
 
-
-@*Footer*@
 <div class="card-footer Colorfooter">
     <div class="container mt-3">
         <div class="row">
@@ -66,10 +49,14 @@
     </div>
 </div>
 
-
-
-
-
 @code {
+    private List<Productos> productos;
 
-}.
+    [Inject]
+    private IClient<Productos> ProductosService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        productos = await ProductosService.GetAllObject();
+    }
+}
