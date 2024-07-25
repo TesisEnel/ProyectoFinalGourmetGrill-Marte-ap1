@@ -37,6 +37,7 @@ builder.Services.AddScoped(a => new HttpClient
 
 // Servicios
 builder.Services.AddScoped<IClient<Productos>, ProductosServiceClient>();
+builder.Services.AddScoped<IClient<CategoriaProductos>, CategoriaProductosServiceClient>();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
