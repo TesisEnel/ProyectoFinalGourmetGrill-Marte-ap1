@@ -1,15 +1,49 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@inject NavigationManager NavigationManager
 
+<div class="page fondo">
+    @* <div class="sidebar">
+    <NavMenu />
+    </div> *@
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div>
+                    <a href="/"></a>
+                </div>
 
+                <img src="/Imagenes/bollo-de-hamburguesa.png" alt="Burguer" @*style="width: 50px; height: 50px; margin-right: 10px;"*@ />
+                <div class="alinearTexto">
+                    <p><strong>Gourmet Grill</strong></p>
+                </div>
+                <div class="col text-end">
+                    @*Condiciones para los iconos en el top bar*@
+                    @if (currentRoute == "/")
+                    {
+                        <div>
+                            <a href="#" class="btn btn-primary">Ordenar</a>
+                            <a href="Account/Login" class="btn btn-danger">Iniciar Sesi&oacute;n</a>
+                            <a href="Account/Register" class="btn btn-warning">Registrar</a>
+                        </div>
+                    }
+                    @if (currentRoute == "/Account/Register")
+                    {
+                        <div>
+                            <a href="Account/Login" class="btn btn-danger">Iniciar Sesi&oacute;n</a>
+                            <a href="/" class="btn btn-warning">Inicio</a>
+                        </div>
+                    }
+                    else if (currentRoute == "/Account/Login")
+                    {
+                        <div>
+                            <a href="Account/Register" class="btn btn-primary">Registrar</a>
+                            <a href="/" class="btn btn-warning">Inicio</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
         <article class="content px-4">
             @Body
         </article>
@@ -21,3 +55,34 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+
+@code {
+    private string currentRoute;
+
+    protected override void OnInitialized()
+    {
+        // Suscribirse al evento LocationChanged
+        NavigationManager.LocationChanged += OnLocationChanged;
+        UpdateCurrentRoute();
+    }
+
+    private void UpdateCurrentRoute()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        currentRoute = uri.PathAndQuery;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateCurrentRoute();
+        // Asegúrate de invocar un StateHasChanged si es necesario para actualizar la UI
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        // Desuscribirse del evento cuando el componente se disponga
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
