@@ -20,7 +20,7 @@ public class Productos
     public string? Nombre { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Se Requiere de una Descripción")]
-    [RegularExpression("^[a-zA-Z0-9 ]+$", ErrorMessage = "La Descripción debe contener solo Letras y Números.")]
+    [RegularExpression("^[a-zA-Z0-9 ,]+$", ErrorMessage = "La Descripción debe contener solo Letras y Números")]
     public string? Descripcion { get; set; } = string.Empty;
 
     [Range(1, 1000, ErrorMessage = "La Cantidad debe estar 1 y 1000")]
