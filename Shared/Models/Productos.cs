@@ -32,4 +32,5 @@ public class Productos
     public float Precio { get; set; }
     public int ITBIS { get; set; }
     public bool Disponible { get; set; }
+    public string? ImagenUrl { get; set; }
 }
