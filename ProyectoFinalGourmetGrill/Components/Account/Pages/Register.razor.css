@@ -1,0 +1,27 @@
+﻿﻿.font {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.ub1 {
+    text-align: left;
+    font-weight: bold;
+    color: white;
+    margin: 0.5em 0;
+}
+
+.caja1 {
+    background: rgba(0, 0, 0, 0.5);
+    width: 20em;
+    margin: auto;
+    padding: 2em;
+    border-radius: 1em;
+    color: black;
+}
+
+.formtlo {
+    font-size: 2em;
+    font-weight: bold;
+    padding-bottom: 0.8em;
+    color: white;
+}

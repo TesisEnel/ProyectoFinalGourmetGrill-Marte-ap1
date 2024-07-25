@@ -94,3 +94,12 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+.alinearTexto {
+    margin-top: 20px;
+}
+
+.fondo {
+    background: rgb(250,57,44);
+    background: linear-gradient(0deg, rgba(250,57,44,1) 12%, rgba(253,177,45,1) 73%, rgba(253,187,45,1) 100%);
+}

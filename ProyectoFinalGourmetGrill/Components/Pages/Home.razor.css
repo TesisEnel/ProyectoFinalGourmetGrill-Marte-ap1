@@ -1,0 +1,51 @@
+﻿﻿.menu-title {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.product-card {
+    margin-bottom: 30px;
+}
+
+.borderCard {
+    border-radius: 10px;
+}
+
+.borderBurguer {
+    border-radius: 10px 10px 0 0;
+}
+
+.footer {
+    background-color: #f8f9fa;
+    padding: 40px 0;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+}
+
+    .footer-logo img {
+        margin-right: 10px;
+    }
+
+.logoMargen {
+    width: 75px;
+    height: auto;
+    padding-block-end: 1px;
+    padding-bottom: 1px;
+}
+
+.alinear {
+    display: flex; /* Usa flexbox para alinear los elementos */
+    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: center; /* Centra horizontalmente los elementos */
+    margin: 20px; /* Margen alrededor de la fila */
+}
+
+.Colorfooter {
+    background-color: white;
+    margin-left: -32px;
+    margin-right: -24px;
+}
