@@ -1,7 +1,75 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Gourmet Grill</PageTitle>
+@*Body*@
+<div class="card-body">
+    <div class="container">
+        @*Mini Menu*@
+        <div class="row">
+            @*Primera Hambuerguesa*@
+            <div class="col-md-4 product-card">
+                <div class="card borderCard">
+                    <img src="/Imagenes/Pizza Burger.jpg" class="card-img-top borderBurguer" alt="Pizza Burguer">
+                    <div class="card-body">
+                        <h5 class="card-title text-center"><strong>Intensa</strong></h5>
+                        <p class="card-text">120gr de carne, mermelada de tomate chonto, cebolla encurtida, dip de tres quesos con tocineta</p>
+                        <div class="text-center">
+                            <a href="#" class="btn btn-outline-primary">Ver producto</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*Segunda Hambuerguesa*@
+            <div class="col-md-4 product-card">
+                <div class="card borderCard">
+                    <img src="/Imagenes/Classic Burguer.jpg" class="card-img-top borderBurguer" alt="Classic Burguer">
+                    <div class="card-body">
+                        <h5 class="card-title text-center"><strong>La Cremosa</strong></h5>
+                        <p class="card-text">120gr de carne, croqueta de queso apanada, mermelada de tomate chonto y cebolla encurtida</p>
+                        <div class="text-center">
+                            <a href="#" class="btn btn-outline-primary">Ver producto</a>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+            @*Tercera Hambuerguesa*@
+            <div class="col-md-4 product-card">
+                <div class="card borderCard">
+                    <img src="/Imagenes/Ultimate Crack Burger.jpg" class="card-img-top borderBurguer" alt="Ultimate Crack Burger">
+                    <div class="card-body">
+                        <h5 class="card-title text-center"><strong>La F&oacute;rmula</strong></h5>
+                        <p class="card-text">120gr de carne brangus, lechuga, tomate, cebolla, mermelada de tomate chonto, unas cuantas</p>
+                        <div class="text-center">
+                            <a href="#" class="btn btn-outline-primary">Ver producto</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+@*Footer*@
+<div class="card-footer Colorfooter">
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-4">
+                <h4><strong>Horarios de atenci&oacute;n</strong></h4>
+                <p><strong>Martes a Domingos:</strong> 12:00pm - 10:00pm</p>
+            </div>
+            <div class="col-md-4">
+                <h4><strong>Cont&aacute;ctanos</strong></h4>
+                <p><strong>Tel&eacute;fono:</strong> 809-123-4567</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@code {
+
+}.
