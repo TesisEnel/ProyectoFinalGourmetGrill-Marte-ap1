@@ -26,9 +26,18 @@ builder.Services.AddDataProtection();
  * protección de cookies de autenticación, tokens antifalsificación y almacenamiento seguro de datos sensibles.*/
 
 // Add HttpClient
-builder.Services.AddScoped(a => new HttpClient
-{
-    BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!)
+//builder.Services.AddScoped(a => new HttpClient
+//{
+//    BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!)
+//});
+
+//Cors
+
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAnyOrigin",
+        builder => builder.AllowAnyOrigin() // Allow any origin
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
 });
 
 // Identity services
@@ -68,7 +77,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("AllowAnyOrigin"); // Use the CORS policy
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
