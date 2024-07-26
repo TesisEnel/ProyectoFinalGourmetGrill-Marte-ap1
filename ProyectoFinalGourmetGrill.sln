@@ -5,9 +5,9 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProyectoFinalGourmetGrill", "ProyectoFinalGourmetGrill\ProyectoFinalGourmetGrill.csproj", "{2479CE6C-65E1-42BE-8A81-0A3A4CD672EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{21E9D4D5-2698-4AE7-8B5E-6585C08D470A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{21E9D4D5-2698-4AE7-8B5E-6585C08D470A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GourmetGrillApi.api", "GourmetGrillApi.api\GourmetGrillApi.api.csproj", "{5A13660E-B093-48C4-8970-7479FB05ED68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GourmetGrillApi.api", "GourmetGrillApi.api\GourmetGrillApi.api.csproj", "{5A13660E-B093-48C4-8970-7479FB05ED68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

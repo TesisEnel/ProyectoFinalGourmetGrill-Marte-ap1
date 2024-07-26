@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Shared.Interfaces
 @using Shared.Models
+@inject IClient<Productos> productoService
 
 <PageTitle>Gourmet Grill</PageTitle>
 
@@ -52,11 +53,8 @@
 @code {
     private List<Productos> productos;
 
-    [Inject]
-    private IClient<Productos> ProductosService { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
-        productos = await ProductosService.GetAllObject();
+        productos = await productoService.GetAllObject();
     }
 }
