@@ -1,0 +1,142 @@
+﻿@page "/GourmentGrill/Menu"
+
+@rendermode InteractiveServer
+@using Shared.Interfaces
+@using Shared.Models
+
+@*SideBar Para los Pedidos*@
+<div class="sidebar">
+    <div class="container">
+        <div class="card-header text-center">
+            <strong>Tu Pedido</strong>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        @* <th>Precio</th> *@
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var detalle in orden.OrdenesDetalle)
+                    {
+                        <tr>
+                            <td>@detalle.ProductoId</td>
+                            <td>@detalle.Cantidad</td>
+                            @* <td>@detalle.Producto.Precio</td> *@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<h1><b>Nuestro Men&uacute;</b></h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row mt-4">
+                @if (productos == null) {
+                    <p>Cargando productos...</p>
+                }
+                else if (!productos.Any()) {
+                    <p>No hay productos disponibles.</p>
+                }
+                else {
+                    var totalProductos = productos.Take(8);
+                    int contador = 0;
+                    @foreach (var producto in totalProductos) {
+                        @if (contador % 2 == 0) {
+                            <div class="row"></div>
+                        }
+                        <div class="col-md-6 product-card fontSize">
+                            <div class="card borderCard d-flex flex-row">
+                                <div class="card-body flex-fill">
+                                    <h5 class="card-title text-center"><strong>@producto.Nombre</strong></h5>
+                                    <p class="card-text">@producto.Descripcion</p>
+                                    <p class="card-text text-center" style="font-size: 18px;"><b>$@producto.Precio</b></p>
+                                    <div class="text-center">
+                                        <button class="btn btn-outline-primary" @onclick="() => MostrarModal1(producto)">Agregar</button>
+                                        @* <a href="#" class="btn btn-outline-primary">Agregar</a> *@
+                                    </div>
+                                </div>
+                                <img src="@producto.ImagenUrl" class="borderBurguer img-fluid" alt="@producto.Nombre">
+                            </div>
+                        </div>
+                        contador++;
+                    }
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal#1 -->
+<div class="modal fade" id="exampleModal1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModal1Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="product-card fontSize">
+                <div class="d-flex flex-row">
+                    <img src="@productoSeleccionado.ImagenUrl" class="imagenModal" alt="@productoSeleccionado.Nombre">
+                    <div class="card-body flex-fill">
+                        <h5 class="card-title text-center"><strong>@productoSeleccionado.Nombre</strong></h5>
+                        <p class="card-text">@productoSeleccionado.Descripcion</p>
+                        <p class="card-text text-center" style="font-size: 18px;"><b>$@productoSeleccionado.Precio</b></p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="CerrarModal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (mostrarModal1) {
+    <script>
+        var myModal = new bootstrap.Modal(document.getElementById('exampleModal1'));
+        myModal.show();
+    </script>
+}
+
+@code {
+    private List<Productos> productos = new List<Productos>();
+    private Ordenes orden { get; set; } = new Ordenes();
+    public bool mostrarModal1 { get; set; }
+    public Productos productoSeleccionado { get; set; } = new Productos();
+
+    private int currentCount = 1;
+
+    private void IncrementCount() {
+        currentCount++;
+    }
+
+    [Inject]
+    private IClient<Productos> ProductosService { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        productos = await ProductosService.GetAllObject();
+    }
+
+    public void CerrarModal() {
+        mostrarModal1 = false;
+        var detallePedido = new OrdenesDetalle {
+                ProductoId = productoSeleccionado.ProductoId,
+                Cantidad = currentCount
+        };
+        orden.OrdenesDetalle.Add(detallePedido);
+    }
+
+    private void MostrarModal1(Productos producto) {
+        mostrarModal1 = true;
+        productoSeleccionado = producto;
+    }
+}
