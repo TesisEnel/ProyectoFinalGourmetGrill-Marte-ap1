@@ -32,7 +32,7 @@
                 <div class="col-4">
                     <div class="input-group">
                         <InputText class="form-control" @bind-Value="valorFiltro" placeholder="Ingrese el dato"></InputText>
-                        <button type="button" class="btn btn-info" @onclick="Buscar">Buscar</button>
+                        <button type="button" class="btn btn-outline-primary" @onclick="Buscar">Buscar</button>
                     </div>                   
                 </div>
                 <div class="col-md-4 mb-5">
@@ -60,7 +60,7 @@
                             <tr class="text-center">
                                 <td>@producto.ProductoId</td>
                                 <td>@producto.Nombre</td>
-                                <td>@producto.CategoriaId</td>
+                                <td>@producto.Categoria?.Nombre</td>
                                 <td>@producto.Precio.ToString("N2")</td>
                                 <td>@producto.ITBIS.ToString("N2")</td>
                                 <td>@producto.Cantidad</td>
