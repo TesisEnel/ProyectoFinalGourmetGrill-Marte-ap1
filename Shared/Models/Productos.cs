@@ -15,6 +15,9 @@ public class Productos
     [ForeignKey("Categorias")]
     public int CategoriaId { get; set; }
 
+   // [Required(ErrorMessage = "Se Requiere una Categoria")]
+    public CategoriaProductos? Categoria { get; set; }
+
     [Required(ErrorMessage = "Se Requiere un Nombre")]
     [RegularExpression("^[a-zA-Z0-9 ]+$", ErrorMessage = "El Nombre debe Contener Solo Letras y Números.")]
     public string? Nombre { get; set; } = string.Empty;
@@ -30,7 +33,7 @@ public class Productos
     [Required(ErrorMessage = "Indique el Precio")]
     [Range(0.01, 1000000000, ErrorMessage = "El Precio debe estar 0.01 y 1000000000")]
     public float Precio { get; set; }
-    public int ITBIS { get; set; }
+    public float ITBIS { get; set; }
     public bool Disponible { get; set; }
     public string? ImagenUrl { get; set; }
 }
