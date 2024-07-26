@@ -17,6 +17,7 @@ public class ProductosService(ApplicationDbContext _contexto) : IServer<Producto
     public async Task<List<Productos>> GetAllObject()
     {
         return await _contexto.Productos
+            .Include(c => c.Categoria)
             .ToListAsync();
     }
 
