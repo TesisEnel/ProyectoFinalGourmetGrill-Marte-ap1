@@ -288,6 +288,12 @@ namespace GourmetGrillApi.api.Migrations
                         column: x => x.OrdenesDetalleId,
                         principalTable: "Ordenes",
                         principalColumn: "OrdenId");
+                    table.ForeignKey(
+                        name: "FK_OrdenesDetalle_Productos_ProductoId",
+                        column: x => x.ProductoId,
+                        principalTable: "Productos",
+                        principalColumn: "ProductoId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -303,6 +309,12 @@ namespace GourmetGrillApi.api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VentasDetalle", x => x.DetalleID);
+                    table.ForeignKey(
+                        name: "FK_VentasDetalle_Productos_ProductoId",
+                        column: x => x.ProductoId,
+                        principalTable: "Productos",
+                        principalColumn: "ProductoId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_VentasDetalle_Ventas_VentaId",
                         column: x => x.VentaId,
@@ -409,9 +421,19 @@ namespace GourmetGrillApi.api.Migrations
                 column: "OrdenesDetalleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrdenesDetalle_ProductoId",
+                table: "OrdenesDetalle",
+                column: "ProductoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Productos_CategoriaId",
                 table: "Productos",
                 column: "CategoriaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VentasDetalle_ProductoId",
+                table: "VentasDetalle",
+                column: "ProductoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VentasDetalle_VentaId",
@@ -447,9 +469,6 @@ namespace GourmetGrillApi.api.Migrations
                 name: "OrdenesDetalle");
 
             migrationBuilder.DropTable(
-                name: "Productos");
-
-            migrationBuilder.DropTable(
                 name: "VentasDetalle");
 
             migrationBuilder.DropTable(
@@ -462,10 +481,13 @@ namespace GourmetGrillApi.api.Migrations
                 name: "Ordenes");
 
             migrationBuilder.DropTable(
-                name: "CategoriaProductos");
+                name: "Productos");
 
             migrationBuilder.DropTable(
                 name: "Ventas");
+
+            migrationBuilder.DropTable(
+                name: "CategoriaProductos");
         }
     }
 }

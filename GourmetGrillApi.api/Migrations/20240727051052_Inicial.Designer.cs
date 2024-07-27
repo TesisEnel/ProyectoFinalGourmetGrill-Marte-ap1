@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GourmetGrillApi.api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240726225521_Inicial")]
+    [Migration("20240727051052_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -404,6 +404,8 @@ namespace GourmetGrillApi.api.Migrations
 
                     b.HasIndex("OrdenesDetalleId");
 
+                    b.HasIndex("ProductoId");
+
                     b.ToTable("OrdenesDetalle");
                 });
 
@@ -696,6 +698,8 @@ namespace GourmetGrillApi.api.Migrations
 
                     b.HasKey("DetalleID");
 
+                    b.HasIndex("ProductoId");
+
                     b.HasIndex("VentaId");
 
                     b.ToTable("VentasDetalle");
@@ -757,6 +761,14 @@ namespace GourmetGrillApi.api.Migrations
                     b.HasOne("Shared.Models.Ordenes", null)
                         .WithMany("OrdenesDetalle")
                         .HasForeignKey("OrdenesDetalleId");
+
+                    b.HasOne("Shared.Models.Productos", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("Shared.Models.Productos", b =>
@@ -772,11 +784,19 @@ namespace GourmetGrillApi.api.Migrations
 
             modelBuilder.Entity("Shared.Models.VentasDetalle", b =>
                 {
+                    b.HasOne("Shared.Models.Productos", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Shared.Models.Ventas", null)
                         .WithMany("VentasDetalle")
                         .HasForeignKey("VentaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("Shared.Models.Ordenes", b =>
