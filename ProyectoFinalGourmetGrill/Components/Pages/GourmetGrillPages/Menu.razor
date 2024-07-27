@@ -8,7 +8,7 @@
 <div class="sidebar">
     <div class="container">
         <div class="card-header text-center">
-            <strong>Tu Pedido</strong>
+            <strong>Tu Carrito (@orden.OrdenesDetalle.Count())</strong>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
@@ -20,8 +20,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(var detalle in orden.OrdenesDetalle)
-                    {
+                    @foreach (var detalle in orden.OrdenesDetalle) {
                         <tr>
                             <td>@detalle.ProductoId</td>
                             <td>@detalle.Cantidad</td>
@@ -79,22 +78,19 @@
 
 <!-- Modal#1 -->
 <div class="modal fade" id="exampleModal1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModal1Label" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg" style="position: center; top: 45%; left: 30%; transform: translate(-50%, -50%)">
         <div class="modal-content">
-            <div class="product-card fontSize">
-                <div class="d-flex flex-row">
-                    <img src="@productoSeleccionado.ImagenUrl" class="imagenModal" alt="@productoSeleccionado.Nombre">
-                    <div class="card-body flex-fill">
-                        <h5 class="card-title text-center"><strong>@productoSeleccionado.Nombre</strong></h5>
-                        <p class="card-text">@productoSeleccionado.Descripcion</p>
-                        <p class="card-text text-center" style="font-size: 18px;"><b>$@productoSeleccionado.Precio</b></p>
-                    </div>
-
+            <div class="modal-body d-flex p-0">
+                <div class="modal-image">
+                    <img src="@productoSeleccionado.ImagenUrl" class="img-fluid" alt="Imagen del Producto">
                 </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="CerrarModal">Cerrar</button>
+                <button type="button" class="btn-close order-5 mt-2" data-bs-dismiss="modal" @onclick="CerrarModal" style="margin-right: 10px;"></button>
+                <h5 class="modal-title text-center order-1" style="rig">@productoSeleccionado.Nombre</h5>
+                <div class="contenidoModal p-4">
+                    <p>@productoSeleccionado.Descripcion</p>
+                    <p>Precio: $@productoSeleccionado.Precio</p>
+                    <button type="button" class="btn btn-primary" @onclick="()=>AgregarProducto(productoSeleccionado)">Agregar al carrito</button>
+                </div>
             </div>
         </div>
     </div>
@@ -126,13 +122,16 @@
         productos = await ProductosService.GetAllObject();
     }
 
-    public void CerrarModal() {
-        mostrarModal1 = false;
+    public void AgregarProducto(Productos producto) {
         var detallePedido = new OrdenesDetalle {
                 ProductoId = productoSeleccionado.ProductoId,
                 Cantidad = currentCount
         };
         orden.OrdenesDetalle.Add(detallePedido);
+    }
+
+    public void CerrarModal() {
+        mostrarModal1 = false;
     }
 
     private void MostrarModal1(Productos producto) {
