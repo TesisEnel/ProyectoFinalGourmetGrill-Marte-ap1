@@ -12,6 +12,7 @@ public class Ordenes
 {
     [Key]
     public int OrdenId { get; set; }
+
     [ForeignKey("ApplicationUser")]
     public string? ClienteId { get; set; }
 
