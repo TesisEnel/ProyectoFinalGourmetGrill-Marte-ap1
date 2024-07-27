@@ -27,14 +27,12 @@ public class Ordenes
     [ForeignKey("Estados")]
     public int EstadoId { get; set; }
 
-    [Required(ErrorMessage = "La Descripción es obligatoria")]
-    public string? Descripcion { get; set; }
+    public string? Descripcion { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "El Teléfono es obligatorio")]
     [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "El número de teléfono debe tener el formato 800-000-0000")]
     public string? Telefono { get; set; }
 
-    [Required(ErrorMessage = "La Fecha es obligatoria")]
     public DateTime Fecha { get; set; } = DateTime.Now;
 
     [ForeignKey("OrdenesDetalleId")]

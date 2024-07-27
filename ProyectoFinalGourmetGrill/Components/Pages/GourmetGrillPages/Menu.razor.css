@@ -1,0 +1,94 @@
+﻿.menu-title {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.product-card {
+    margin-bottom: 30px;
+}
+
+.borderCard {
+    border-radius: 10px;
+    overflow: hidden; /* Asegura que el contenido no se salga de los bordes redondeados */
+}
+
+.borderBurguer {
+    border-radius: 0 10px 10px 0;
+    object-fit: cover; /* Ajusta la imagen para que cubra el contenedor */
+    width: 145px; /* Ajusta el ancho de la imagen */
+}
+
+.card {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    max-width: 600px; /* Ajusta el ancho máximo de la tarjeta */
+    margin: auto; /* Centra la tarjeta horizontalmente */
+}
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+.footer {
+    background-color: #f8f9fa;
+    padding: 40px 0;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+}
+
+    .footer-logo img {
+        margin-right: 10px;
+    }
+
+.logoMargen {
+    width: 75px;
+    height: auto;
+    padding-block-end: 1px;
+    padding-bottom: 1px;
+}
+
+.alinear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+}
+
+.Colorfooter {
+    background-color: white;
+    margin-left: -32px;
+    margin-right: -24px;
+}
+
+
+.fontSize{
+    font-size: 11px;
+}
+
+.sidebar {
+    padding: 20px;
+    background-color: #f8f9fa; /* Color de fondo del sidebar */
+    position: fixed;
+    top: 70px;
+    bottom: 50px;
+    right: 20px;
+    width: 25%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.card-header{
+    border-radius: 10px;
+    background-color: #FF9933;
+    border: solid 3px #000000;
+}
+
+.imagenModal {
+    max-height: 300px;
+    min-height: 300px;
+    border-top-left-radius: 4px;
+}
