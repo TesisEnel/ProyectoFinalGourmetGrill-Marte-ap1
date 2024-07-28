@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using ProyectoFinalGourmetGrill.Components;
 using ProyectoFinalGourmetGrill.Components.Account;
 using ProyectoFinalGourmetGrill.Data;
@@ -33,6 +34,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped(a => new HttpClient
 {
     BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!) // Asegúrate de tener esta sección en appsettings.json
+});
+
+//Blob Services
+var storageConnection = builder.Configuration["ConnectionStrings:GourmetGrill:Storage"];
+
+builder.Services.AddAzureClients(azureBuilder =>
+{
+    azureBuilder.AddBlobServiceClient(storageConnection);
 });
 
 // Servicios
