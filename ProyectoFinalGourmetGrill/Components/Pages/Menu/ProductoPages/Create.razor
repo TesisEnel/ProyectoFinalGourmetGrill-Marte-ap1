@@ -1,9 +1,9 @@
 ﻿@page "/CrearProducto"
 @using Shared.Interfaces
 @using Shared.Models
-
 @inject IClient<Productos> productoService
 @inject IClient<CategoriaProductos> categoriaService
+@inject BlobServiceClient blobService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
@@ -39,20 +39,7 @@
                         <label class="form-label" for="cantidad"><strong>Cantidad</strong></label>
                         <InputNumber class="form-control" id="cantidad" @bind-Value="Producto.Cantidad" @oninput="ActualizarDisponibilidad"></InputNumber>
                         <ValidationMessage For="@(() => Producto.Cantidad)" />
-                    </div>
-                    <div class="col-6">
-                        @*Precio*@
-                        <label class="form-label" for="precio"><strong>Precio</strong></label>
-                        <InputNumber class="form-control" id="precio" @bind-Value="Producto.Precio" @oninput="ActualizarITBIS"></InputNumber>
-                        <ValidationMessage For="@(() => Producto.Precio)" />
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-6">
-                        @*ITBIS*@
-                        <label class="form-label" for="itbis"><strong>ITBIS</strong></label>
-                        <InputNumber class="form-control" id="itbis" @bind-Value="Producto.ITBIS" ReadOnly></InputNumber>
-                    </div>
+                    </div>    
                     <div class="col-6">
                         @*Categoría*@
                         <label class="form-label" for="categoria"><strong>Categoría</strong></label>
@@ -68,16 +55,22 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-6">
-                        @*Disponible*@
-                       @*  <label class="form-label" for="disponible"><strong>Disponible</strong></label>
-                        <div>
-                            <span class="form-control text-center fs-5" style="@GetDisponibilidadEstilo()">@GetDisponibilidadTexto()</span>
-                        </div> *@
+                        @*ITBIS*@
+                        <label class="form-label" for="itbis"><strong>ITBIS</strong></label>
+                        <InputNumber class="form-control" id="itbis" @bind-Value="Producto.ITBIS" ReadOnly></InputNumber>
                     </div>
                     <div class="col-6">
+                        @*Precio*@
+                        <label class="form-label" for="precio"><strong>Precio</strong></label>
+                        <InputNumber class="form-control" id="precio" @bind-Value="Producto.Precio" @oninput="ActualizarITBIS"></InputNumber>
+                        <ValidationMessage For="@(() => Producto.Precio)" />
+                    </div>                    
+                </div>
+                <div class="row mt-2">
+                    <div class="col-6">
                         @*Imagen URL*@
-                        <label class="form-label" for="imagenUrl"><strong>Imagen URL</strong></label>
-                        <InputText class="form-control" id="imagenUrl" @bind-Value="Producto.ImagenUrl"></InputText>
+                        <label class="form-label" for="imagenUrl"><strong>Seleccione la Imagen del Producto</strong></label>
+                        <InputFile OnChange="UploadImagen" />
                         <ValidationMessage For="@(() => Producto.ImagenUrl)" />
                     </div>
                 </div>
@@ -147,14 +140,19 @@
         }
     }
 
-    // private string GetDisponibilidadTexto()
-    // {
-    //     return Producto.Disponible ? "Disponible" : "No Disponible";
-    // }
+    private async Task UploadImagen(InputFileChangeEventArgs e)
+    {
+        var imageFile = e.File;
 
-    // private string GetDisponibilidadEstilo()
-    // {
-    //     var color = Producto.Disponible ? "green" : "red";
-    //     return $"background-color: {color}; color: white; font-weight: bold;";
-    // }
+        if (imageFile != null)
+        {
+            var containerClient = blobService.GetBlobContainerClient("gourmetweb");
+            var blobClient = containerClient.GetBlobClient(imageFile.Name);
+
+            await using var stream = imageFile.OpenReadStream();
+            await blobClient.UploadAsync(stream, true);
+
+            Producto.ImagenUrl = blobClient.Uri.ToString();
+        }
+    }
 }
