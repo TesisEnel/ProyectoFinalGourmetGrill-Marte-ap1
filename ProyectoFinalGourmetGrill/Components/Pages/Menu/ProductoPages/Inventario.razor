@@ -1,14 +1,14 @@
 ﻿@page "/Inventario"
 @page "/Inventario/{ProductoId:int}"
-@using Microsoft.AspNetCore.Authorization
-@using ProyectoFinalGourmetGrill.Data
 @using Shared.Interfaces
 @using Shared.Models
 @* @attribute [Authorize(Roles = "Admin")] *@
+
 @inject NavigationManager NavigationManager
 @inject IClient<Productos> productoService
 @inject IClient<CategoriaProductos> categoriaService
 @inject ApplicationDbContext dbContext
+
 @rendermode InteractiveServer
 
 <PageTitle>Inventario</PageTitle>
