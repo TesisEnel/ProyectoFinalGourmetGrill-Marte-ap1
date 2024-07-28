@@ -4,38 +4,53 @@
 @using Shared.Interfaces
 @using Shared.Models
 
-@*SideBar Para los Pedidos*@
+
+@*Carrito*@
 <div class="sidebar">
     <div class="container">
         <div class="card-header text-center">
-            <strong>Tu Pedido</strong>
+            <strong>Tu Carrito (@orden.OrdenesDetalle.Count())</strong>
         </div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        @* <th>Precio</th> *@
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach(var detalle in orden.OrdenesDetalle)
-                    {
+        <div class="card-body text-center">
+            @if(orden.OrdenesDetalle.Count() == 0) {
+                <p>No hay productos en tu carrito.</p>
+            }
+            else {
+                <table class="table table-bordered">
+                    <thead>
                         <tr>
-                            <td>@detalle.ProductoId</td>
-                            <td>@detalle.Cantidad</td>
-                            @* <td>@detalle.Producto.Precio</td> *@
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-
+                    </thead>
+                    <tbody>
+                        @foreach(var detalle in orden.OrdenesDetalle) {
+                            <tr>
+                                <td>@detalle.ProductoId</td>
+                                <td>@detalle.Cantidad</td>
+                                <td>@(detalle.Producto.Precio * detalle.Cantidad)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }  
+        </div>
+        @*Footer*@
+        <div class="card-footer piePagina">
+            <div class="d-flex justify-content-between">
+                <strong>Total:</strong>
+                <strong>$@orden.OrdenesDetalle.Sum(x => x.Producto.Precio * x.Cantidad)</strong>
+            </div>
         </div>
     </div>
 </div>
 
-<h1><b>Nuestro Men&uacute;</b></h1>
+@*Titulo*@
+<div class="text-center">
+    <h1><b>Nuestro Men&uacute;</b></h1>
+</div>
+
 
 <div class="container">
     <div class="row">
@@ -48,7 +63,7 @@
                     <p>No hay productos disponibles.</p>
                 }
                 else {
-                    var totalProductos = productos.Take(8);
+                    var totalProductos = productos.Take(15);
                     int contador = 0;
                     @foreach (var producto in totalProductos) {
                         @if (contador % 2 == 0) {
@@ -59,10 +74,9 @@
                                 <div class="card-body flex-fill">
                                     <h5 class="card-title text-center"><strong>@producto.Nombre</strong></h5>
                                     <p class="card-text">@producto.Descripcion</p>
-                                    <p class="card-text text-center" style="font-size: 18px;"><b>$@producto.Precio</b></p>
+                                    <p class="card-text text-center" style="font-size: 18px;"><b>@producto.Precio.ToString("C")</b></p>
                                     <div class="text-center">
                                         <button class="btn btn-outline-primary" @onclick="() => MostrarModal1(producto)">Agregar</button>
-                                        @* <a href="#" class="btn btn-outline-primary">Agregar</a> *@
                                     </div>
                                 </div>
                                 <img src="@producto.ImagenUrl" class="borderBurguer img-fluid" alt="@producto.Nombre">
@@ -79,22 +93,30 @@
 
 <!-- Modal#1 -->
 <div class="modal fade" id="exampleModal1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModal1Label" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg" style="position: center; top: 45%; left: 30%; transform: translate(-50%, -50%)">
         <div class="modal-content">
-            <div class="product-card fontSize">
-                <div class="d-flex flex-row">
-                    <img src="@productoSeleccionado.ImagenUrl" class="imagenModal" alt="@productoSeleccionado.Nombre">
-                    <div class="card-body flex-fill">
-                        <h5 class="card-title text-center"><strong>@productoSeleccionado.Nombre</strong></h5>
-                        <p class="card-text">@productoSeleccionado.Descripcion</p>
-                        <p class="card-text text-center" style="font-size: 18px;"><b>$@productoSeleccionado.Precio</b></p>
+            <div class="modal-body d-flex p-0">
+                <div class="modal-image">
+                    <img src="@productoSeleccionado.ImagenUrl" class="img-fluid" alt="Imagen del Producto">
+                </div>
+                <button type="button" class="btn-close mt-2" data-bs-dismiss="modal" @onclick="CerrarModal"></button>
+                <div class="contenidoModal p-4">
+                    <h5 class="modal-title"><strong>@productoSeleccionado.Nombre</strong></h5>
+                    <p class="mt-2">@productoSeleccionado.Descripcion</p>
+                    <p class="text-center"><strong>Precio: @productoSeleccionado.Precio.ToString("C")</strong></p>
+
+                    <div class="row d-flex align-items-center mt-5 ms-4">
+                        @*Cantidad*@
+                        <button class="btn btnCantidad" @onclick="()=>DecrementCount()">-</button>
+                        <input type="text" class="form-control text-center mx-2" value="@currentCount" readonly style="width: 50px;" />
+                        <button class="btn btnCantidad" @onclick="()=>IncrementCount()">+</button>
+
+                        @*Agregar y Cantidad*@
+                        <button type="button" class="ms-5 btn btnAgregar bi bi-cart4" @onclick="()=>AgregarProducto(productoSeleccionado)" data-bs-dismiss="modal"> Agregar @Precio.ToString("C")</button>
+
                     </div>
 
                 </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="CerrarModal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -107,16 +129,27 @@
     </script>
 }
 
+
 @code {
     private List<Productos> productos = new List<Productos>();
     private Ordenes orden { get; set; } = new Ordenes();
     public bool mostrarModal1 { get; set; }
     public Productos productoSeleccionado { get; set; } = new Productos();
+    public float Precio { get; set; }
 
     private int currentCount = 1;
 
     private void IncrementCount() {
         currentCount++;
+        Precio = productoSeleccionado.Precio * currentCount;
+    }
+
+    private void DecrementCount() {
+        currentCount--;
+        if (currentCount < 1) {
+            currentCount = 1;
+        }
+        Precio = productoSeleccionado.Precio * currentCount;
     }
 
     [Inject]
@@ -126,17 +159,26 @@
         productos = await ProductosService.GetAllObject();
     }
 
+    public async Task AgregarProducto(Productos producto) {
+        var detallePedido = new OrdenesDetalle {
+                Producto = productoSeleccionado,
+                Cantidad = currentCount
+
+            };
+        orden.OrdenesDetalle.Add(detallePedido);
+        CerrarModal();
+        
+    }
+
     public void CerrarModal() {
         mostrarModal1 = false;
-        var detallePedido = new OrdenesDetalle {
-                ProductoId = productoSeleccionado.ProductoId,
-                Cantidad = currentCount
-        };
-        orden.OrdenesDetalle.Add(detallePedido);
+        currentCount = 1;
     }
 
     private void MostrarModal1(Productos producto) {
         mostrarModal1 = true;
         productoSeleccionado = producto;
+        currentCount = 1;
+        Precio = productoSeleccionado.Precio;
     }
 }
