@@ -55,16 +55,16 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-6">
-                        @*ITBIS*@
-                        <label class="form-label" for="itbis"><strong>ITBIS</strong></label>
-                        <InputNumber class="form-control" id="itbis" @bind-Value="Producto.ITBIS" ReadOnly></InputNumber>
-                    </div>
-                    <div class="col-6">
                         @*Precio*@
                         <label class="form-label" for="precio"><strong>Precio</strong></label>
                         <InputNumber class="form-control" id="precio" @bind-Value="Producto.Precio" @oninput="ActualizarITBIS"></InputNumber>
                         <ValidationMessage For="@(() => Producto.Precio)" />
                     </div>                    
+                    <div class="col-6">
+                        @*ITBIS*@
+                        <label class="form-label" for="itbis"><strong>ITBIS</strong></label>
+                        <InputNumber class="form-control" id="itbis" @bind-Value="Producto.ITBIS" ReadOnly></InputNumber>
+                    </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-6">
