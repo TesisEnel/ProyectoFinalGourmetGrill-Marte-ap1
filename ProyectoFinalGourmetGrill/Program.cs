@@ -47,6 +47,7 @@ builder.Services.AddAzureClients(azureBuilder =>
 // Servicios
 builder.Services.AddScoped<IClient<Productos>, ProductosServiceClient>();
 builder.Services.AddScoped<IClient<CategoriaProductos>, CategoriaProductosServiceClient>();
+builder.Services.AddScoped<IClient<Ordenes>, OrdenServiceClient>();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
