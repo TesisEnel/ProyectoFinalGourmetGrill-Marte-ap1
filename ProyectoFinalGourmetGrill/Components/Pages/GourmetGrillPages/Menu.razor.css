@@ -12,7 +12,7 @@
     border-radius: 10px;
     overflow: hidden; /* Asegura que el contenido no se salga de los bordes redondeados */
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
 }
 
 .borderBurguer {
@@ -24,13 +24,22 @@
 .card {
     transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
     max-width: 600px; /* Ajusta el ancho máximo de la tarjeta */
-    margin: auto; /* Centra la tarjeta horizontalmente */
+    width: 90%; /* Ajusta el ancho de la tarjeta */
+    height: 105%; /* Ajusta la altura de la tarjeta */
 }
 
     .card:hover {
         transform: translateY(-10px);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px; /* Ajusta el padding para el contenido */
+}
+
 
 .footer {
     background-color: #f8f9fa;
@@ -71,33 +80,6 @@
     font-size: 11px;
 }
 
-.sidebar {
-    padding: 20px;
-    background-color: #f8f9fa;
-    position: fixed;
-    top: 70px;
-    bottom: 50px;
-    right: 20px;
-    width: 25%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    overflow-y: auto; /* Agrega un scroll vertical si es necesario */
-}
-
-.card-header{
-    border-radius: 10px;
-    background-color: #FF9933;
-    border: solid 3px #000000;
-}
-
-.order-1{
-    left: 100px;
-}
-
-
-..modal-lg {
-    max-width: 900px; /* Aumenta el tamaño máximo del modal */
-}
 
 .modal-content {
     display: flex;
@@ -153,6 +135,15 @@
 
 }
 
+.btnMas {
+    color: white;
+    padding: 2px 10px; /* Ajusta el padding para que coincida con el botón Agregar */
+    font-size: 18px;
+    border-radius: 15px;
+    background-color: black;
+    width: fit-content;
+}
+
 .btnCantidad {
     color: white;
     padding: 2px 10px; /* Ajusta el padding para que coincida con el botón Agregar */
@@ -162,12 +153,145 @@
     width: fit-content;
 }
 
-.piePagina{
-    
+/*Carrito*/
 
-
+.sidebar {
+    padding: 20px;
+    background-color: #f8f9fa;
+    position: fixed;
+    top: 70px;
+    bottom: 50px;
+    right: 20px;
+    width: 28%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
-.fotoCarrito{
+.card-header {
+    background-color: #FF9933;
+    border: solid 3px #000000;
+    padding: 10px;
+    border-radius: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
 
+.sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 20px; /* Ajusta según sea necesario para dejar espacio para el header */
+    margin-bottom: 20px; /* Ajusta según sea necesario para dejar espacio para el footer */
+}
+
+.card-footer {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-top: solid 1px #ddd;
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+}
+
+/*Contenido del Carrito*/
+
+/*.product-image {
+    width: 50px;*/ /* Reducimos el ancho de la imagen */
+    /*height: 50px;
+    border-radius: 5px;
+    object-fit: cover;
+    margin-right: 1rem;
+}
+
+.espacioProducto {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: whitesmoke;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-info {
+    flex-grow: 1;
+}
+
+.product-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.product-price {
+    font-size: 1.1rem;*/ /* Reducimos un poco el tamaño de la fuente */
+    /*color: #333;
+}*/
+
+
+/*Prueba*/
+.product-image {
+    width: 50px; /* Reducimos el ancho de la imagen */
+    height: 50px;
+    border-radius: 5px;
+    object-fit: cover;
+    margin-right: 1rem;
+}
+
+.espacioProducto {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: whitesmoke;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.product-info {
+    flex-grow: 1;
+    position: relative;
+}
+
+.product-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.product-price {
+    font-size: 1.1rem; /* Reducimos un poco el tamaño de la fuente */
+    color: #333;
+}
+
+.btn-round {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-round:hover {
+        background-color: #e2e6ea;
+    }
+
+    .btn-round:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+
+esquinaBtn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    cursor: pointer;
 }

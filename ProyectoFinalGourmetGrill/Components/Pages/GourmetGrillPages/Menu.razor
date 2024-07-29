@@ -1,5 +1,7 @@
 ﻿@page "/GourmentGrill/Menu"
 
+@inject IClient<Productos> ProductosService
+@inject IClient<Ordenes> OrdenesService
 @rendermode InteractiveServer
 @using Shared.Interfaces
 @using Shared.Models
@@ -7,42 +9,46 @@
 
 @*Carrito*@
 <div class="sidebar">
-    <div class="container">
-        <div class="card-header text-center">
-            <strong>Tu Carrito (@orden.OrdenesDetalle.Count())</strong>
-        </div>
-        <div class="card-body text-center">
-            @if(orden.OrdenesDetalle.Count() == 0) {
-                <p>No hay productos en tu carrito.</p>
+    <div class="card-header text-center">
+        <strong style="font-size: 20px;">Tu Carrito (@orden.OrdenesDetalle.Count())</strong>
+    </div>
+    <div class="card-body sidebar-body">
+        @if (orden.OrdenesDetalle.Count() == 0) {
+            <p>No hay productos en tu carrito.</p>
+        }
+        else {
+            @foreach (var detalle in orden.OrdenesDetalle) {
+                <div class="espacioProducto" style="font-size: 10px;">
+                    @if (detalle.Producto != null) {
+                        <img src="@detalle.Producto.ImagenUrl" alt="Burguer" class="product-image" />
+                    }
+                    <div class="product-info">
+                        <div class="text-center position-relative">
+                            @if (detalle.Producto != null) {
+                                <button type="button" class="btn-close esquinaBtn" @onclick="()=>EliminarProducto(detalle)"></button>
+                                <h2 class="product-title text-center">@detalle.Producto.Nombre</h2>
+                                <p class="product-price">
+                                    Cantidad:
+                                    <button type="button" class="btn btn-round" @onclick="()=>Disminuir(detalle)">-</button>
+                                    @detalle.Cantidad
+                                    <button type="button" class="btn btn-round" @onclick="()=>Aumentar(detalle)">+</button>
+                                    <br />
+                                    @((detalle.Cantidad * detalle.Producto.Precio).ToString("C"))
+                                </p>
+                            }
+                        </div>
+                    </div>
+
+                </div>
             }
-            else {
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(var detalle in orden.OrdenesDetalle) {
-                            <tr>
-                                <td>@detalle.ProductoId</td>
-                                <td>@detalle.Cantidad</td>
-                                <td>@(detalle.Producto.Precio * detalle.Cantidad)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }  
+        }
+    </div>
+    <div class="card-footer">
+        <div class="d-flex justify-content-between">
+            <strong>Total:</strong>
+            <strong>@orden.OrdenesDetalle.Sum(x => x.Producto.Precio * x.Cantidad).ToString("C")</strong>
         </div>
-        @*Footer*@
-        <div class="card-footer piePagina">
-            <div class="d-flex justify-content-between">
-                <strong>Total:</strong>
-                <strong>$@orden.OrdenesDetalle.Sum(x => x.Producto.Precio * x.Cantidad)</strong>
-            </div>
-        </div>
+        <button class="btn btn-primary">Realizar Pedido</button>
     </div>
 </div>
 
@@ -51,32 +57,52 @@
     <h1><b>Nuestro Men&uacute;</b></h1>
 </div>
 
-
+@*Menú*@
 <div class="container">
     <div class="row">
         <div class="col-md-8">
             <div class="row mt-4">
-                @if (productos == null) {
+                @if (ListaProductos == null) {
                     <p>Cargando productos...</p>
                 }
-                else if (!productos.Any()) {
+                else if (!ListaProductos.Any()) {
                     <p>No hay productos disponibles.</p>
                 }
                 else {
-                    var totalProductos = productos.Take(15);
+                    var categorias = new Dictionary<int, string>
+                    {
+                        { 1, "Hamburguesas" },
+                        { 2, "Papas" },
+                        { 3, "Acompañantes" },
+                        { 4, "Bebidas" }
+                    };
+
+                    // Ordenar la lista de productos por CategoriaId
+                    var productosAgrupados = ListaProductos.OrderBy(p => p.CategoriaId).ToList();
+                    int categoriaActual = -1;
+
                     int contador = 0;
-                    @foreach (var producto in totalProductos) {
+                    @foreach (var producto in ListaProductos) {
+                        @if (producto.CategoriaId != categoriaActual) {
+                            categoriaActual = producto.CategoriaId;
+                            contador = 0; // Reiniciar el contador para la nueva categoría
+                            <h2><strong>@categorias[producto.CategoriaId]</strong></h2>
+                        }
+
+                        @*Salto de linea cada 2 productos*@
                         @if (contador % 2 == 0) {
                             <div class="row"></div>
                         }
-                        <div class="col-md-6 product-card fontSize">
+
+                        @*Contenido del Producto*@
+                        <div class="col-md-6 product-card fontSize mt-2">
                             <div class="card borderCard d-flex flex-row">
                                 <div class="card-body flex-fill">
                                     <h5 class="card-title text-center"><strong>@producto.Nombre</strong></h5>
                                     <p class="card-text">@producto.Descripcion</p>
                                     <p class="card-text text-center" style="font-size: 18px;"><b>@producto.Precio.ToString("C")</b></p>
                                     <div class="text-center">
-                                        <button class="btn btn-outline-primary" @onclick="() => MostrarModal1(producto)">Agregar</button>
+                                        <button class="btn btnMas" @onclick="() => MostrarModalProducto(producto)">+</button>
                                     </div>
                                 </div>
                                 <img src="@producto.ImagenUrl" class="borderBurguer img-fluid" alt="@producto.Nombre">
@@ -87,11 +113,10 @@
                 }
             </div>
         </div>
-
     </div>
 </div>
 
-<!-- Modal#1 -->
+@*Modal del Producto*@
 <div class="modal fade" id="exampleModal1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModal1Label" aria-hidden="true">
     <div class="modal-dialog modal-lg" style="position: center; top: 45%; left: 30%; transform: translate(-50%, -50%)">
         <div class="modal-content">
@@ -122,7 +147,7 @@
     </div>
 </div>
 
-@if (mostrarModal1) {
+@if (modalProducto) {
     <script>
         var myModal = new bootstrap.Modal(document.getElementById('exampleModal1'));
         myModal.show();
@@ -131,13 +156,19 @@
 
 
 @code {
-    private List<Productos> productos = new List<Productos>();
+    private List<Productos> ListaProductos = new List<Productos>();
     private Ordenes orden { get; set; } = new Ordenes();
-    public bool mostrarModal1 { get; set; }
     public Productos productoSeleccionado { get; set; } = new Productos();
+    public CategoriaProductos Categoria { get; set; } = new CategoriaProductos();
+    public bool modalProducto { get; set; }
+    public bool modalEditarProducto { get; set; }
     public float Precio { get; set; }
 
     private int currentCount = 1;
+
+    protected override async Task OnInitializedAsync() {
+        ListaProductos = await ProductosService.GetAllObject();
+    }
 
     private void IncrementCount() {
         currentCount++;
@@ -152,31 +183,43 @@
         Precio = productoSeleccionado.Precio * currentCount;
     }
 
-    [Inject]
-    private IClient<Productos> ProductosService { get; set; }
-
-    protected override async Task OnInitializedAsync() {
-        productos = await ProductosService.GetAllObject();
+    private void Aumentar(OrdenesDetalle detalle) {
+        detalle.Cantidad++;
+        StateHasChanged(); // Para asegurar que la UI se actualice
     }
 
-    public async Task AgregarProducto(Productos producto) {
-        var detallePedido = new OrdenesDetalle {
-                Producto = productoSeleccionado,
-                Cantidad = currentCount
+    private void Disminuir(OrdenesDetalle detalle) {
+        if (detalle.Cantidad > 1) {
+            detalle.Cantidad--;
+            StateHasChanged(); // Para asegurar que la UI se actualice
+        }
+    }
 
+
+    public async Task AgregarProducto(Productos producto) {
+        var validar = orden.OrdenesDetalle.FirstOrDefault(x => x.Producto.ProductoId == producto.ProductoId);
+        if (validar == null) {
+            var detallePedido = new OrdenesDetalle {
+                    Producto = productoSeleccionado,
+                    Precio = productoSeleccionado.Precio,
+                    Cantidad = currentCount
             };
-        orden.OrdenesDetalle.Add(detallePedido);
+            orden.OrdenesDetalle.Add(detallePedido);
+        }
         CerrarModal();
-        
+    }
+
+    public void EliminarProducto(OrdenesDetalle detalle) {
+        orden.OrdenesDetalle.Remove(detalle);
     }
 
     public void CerrarModal() {
-        mostrarModal1 = false;
+        modalProducto = false;
         currentCount = 1;
     }
 
-    private void MostrarModal1(Productos producto) {
-        mostrarModal1 = true;
+    private void MostrarModalProducto(Productos producto) {
+        modalProducto = true;
         productoSeleccionado = producto;
         currentCount = 1;
         Precio = productoSeleccionado.Precio;
