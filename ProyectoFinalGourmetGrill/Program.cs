@@ -33,7 +33,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // HttpClient
 builder.Services.AddScoped(a => new HttpClient
 {
-    BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!) // Asegúrate de tener esta sección en appsettings.json
+    BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!) 
 });
 
 //Blob Services
