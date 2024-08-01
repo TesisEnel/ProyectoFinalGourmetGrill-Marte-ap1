@@ -11,65 +11,77 @@
 
 @rendermode InteractiveServer
 
+@*Inventario*@
 <PageTitle>Inventario</PageTitle>
+
 <div class="container">
-    <div class="card shadow">
-        <div class="card-header">
-            <h3 class="fw-bold mb-0">Inventario</h3>
+    <div class="card shadow-lg">
+        @*Header*@
+        <div class="card-header text-center">
+             <h3><strong>Inventario</strong></h3>
         </div>
+        @*Body*@
         <div class="card-body">
+            @*Labels*@
             <div class="row">
-                <div class="col-md-2 mb-1 ">
-                    <button class="btn btn-outline-success w-40 mb-5" @onclick="Crear">Agregar Producto</button>
-                </div>
-                <div class="col-2">
-                    <InputSelect id="filtro" class="form-select" @bind-Value="filtro">
-                        <option>Elije una opci&oacute;n</option>
-                        <option value="ID">Id</option>
-                        <option value="nombre">Nombre</option>
-                    </InputSelect>
+                <div class="col-3">
+                    <label class="form-label" for="Filtro"><strong>Filtrar por</strong></label>
                 </div>
                 <div class="col-4">
-                    <div class="input-group">
-                        <InputText class="form-control" @bind-Value="valorFiltro" placeholder="Ingrese el dato"></InputText>
-                        <button type="button" class="btn btn-outline-primary" @onclick="Buscar">Buscar</button>
-                    </div>                   
-                </div>
-                <div class="col-md-4 mb-5">
-                    <button class="btn btn-outline-dark w-40 mb-5" @onclick="OnInitializedAsync">Restablecer</button>
+                    <label class="form-label" for="ValorFiltro"><strong>B&uacute;squeda</strong></label>
                 </div>
             </div>
-            <div>
-                <table class="table table-striped table-bordered justify-content">
+            <div class="row">
+                @*Filtro*@
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected>Elija una opción</option>
+                        <option value="id"><strong>Id</strong></option>
+                        <option value="descripcion"><strong>Descripci&oacute;n</strong></option>
+                    </InputSelect>
+                </div>
+                @*Búsqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise" @onclick="Restablecer"></button>
+                </div>
+                <div class="col text-end">
+                    <button type="button" class="btn btn-outline-primary ms-2" @onclick="MostrarPantallaCrear">Crear</button>
+                </div>
+            </div>
+            @*Tabla*@
+            <div class="text-center mt-3">
+                <table class="table table-bordered">
                     <thead>
-                        <tr class="text-center bg-warning">
+                        <tr class="bg-warning">
                             <th>Producto</th>
                             <th>Nombre</th>
                             <th>Categor&iacute;a</th>
-                            <th>Precio</th>                           
+                            <th>Precio</th>
                             <th>ITBIS</th>
                             <th>Cantidad</th>
                             <th>Estado</th>
                             <th>Editar</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        @foreach (var producto in listaproductos)
-                        {
-                            <tr class="text-center">
+                        @foreach (var producto in Listaproductos) {
+                            <tr>
                                 <td>@producto.ProductoId</td>
                                 <td>@producto.Nombre</td>
                                 <td>@producto.Categoria?.Nombre</td>
                                 <td>@producto.Precio.ToString("N2")</td>
                                 <td>@producto.ITBIS.ToString("N2")</td>
                                 <td>@producto.Cantidad</td>
-                                @if (producto.Disponible)
-                                {
+                                @if (producto.Disponible) {
                                     <td><span class="badge bg-success">Disponible</span></td>
                                 }
-                                else
-                                {
+                                else {
                                     <td><span class="badge bg-danger">No Disponible</span></td>
                                 }
                                 <td><button type="button" class="btn btn-primary" @onclick="() => Editar(producto.ProductoId)">Editar</button></td>
@@ -79,82 +91,95 @@
                 </table>
             </div>
         </div>
+        @*Footer*@
+        <div class="card-footer">
+            <p><strong>Productos Agregados: </strong>@Listaproductos.Count()</p>
+        </div>
     </div>
 </div>
+
+
 
 @code {
     [Parameter]
     public int ProductoId { get; set; }
-    public List<Productos> listaproductos { get; set; } = new List<Productos>();
-    public string? filtro { get; set; }
-    public string? mensaje { get; set; }
-    public string? valorFiltro { get; set; }
-    public List<CategoriaProductos> categorias { get; set; } = new List<CategoriaProductos>();
+    public List<Productos> Listaproductos { get; set; } = new List<Productos>();
+    public string? Filtro { get; set; }
+    public string? Mensaje { get; set; }
+    public string? ValorFiltro { get; set; }
+    public List<CategoriaProductos> Categorias { get; set; } = new List<CategoriaProductos>();
     public int SelectedCategoriaId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        listaproductos = await productoService.GetAllObject();
-        categorias = await categoriaService.GetAllObject();
+        Listaproductos = await productoService.GetAllObject();
+        Categorias = await categoriaService.GetAllObject();
     }
 
-    public void Crear()
+    public void MostrarPantallaCrear()
     {
         NavigationManager.NavigateTo("/CrearProducto");
     }
 
     public async Task Buscar()
     {
-        if (filtro == null)
+        if (Filtro == null)
         {
-            mensaje = "Elija una opción";
+            Mensaje = "Elija una opción";
             StateHasChanged();
             await Task.Delay(3000);
             return;
         }
 
-        switch (filtro)
+        switch (Filtro)
         {
             case "ID":
-                if (int.TryParse(valorFiltro, out int id))
+                if (int.TryParse(ValorFiltro, out int id))
                 {
-                    var buscarId = listaproductos.Where(c => c.ProductoId == id).FirstOrDefault();
+                    var buscarId = Listaproductos.Where(c => c.ProductoId == id).FirstOrDefault();
                     if (buscarId != null)
                     {
-                        listaproductos.Clear();
-                        listaproductos.Add(buscarId);
-                        mensaje = "Producto encontrado";
+                        Listaproductos.Clear();
+                        Listaproductos.Add(buscarId);
+                        Mensaje = "Producto encontrado";
                     }
                     else
                     {
-                        mensaje = "No se encontraron resultados";
+                        Mensaje = "No se encontraron resultados";
                     }
                 }
                 else
                 {
-                    mensaje = "El valor ingresado para ProductoId no es válido";
+                    Mensaje = "El valor ingresado para ProductoId no es válido";
                 }
                 StateHasChanged();
                 break;
 
-            case "nombre":
-                var buscarNombre = listaproductos.Where(c => c.Nombre.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase)).ToList();
+            case "descripcion":
+                var buscarNombre = Listaproductos.Where(c => c.Nombre.Contains(ValorFiltro, StringComparison.OrdinalIgnoreCase)).ToList();
                 if (buscarNombre.Any())
                 {
-                    listaproductos = buscarNombre;
-                    mensaje = "Producto encontrado";
+                    Listaproductos = buscarNombre;
+                    Mensaje = "Producto encontrado";
                 }
                 else
                 {
-                    mensaje = "No se encontraron resultados";
+                    Mensaje = "No se encontraron resultados";
                 }
                 StateHasChanged();
                 break;
         }
     }
 
-    void Editar(int ProductoId)
+    private async Task Restablecer() {
+        Listaproductos = await productoService.GetAllObject();
+        Categorias = await categoriaService.GetAllObject();
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+
+    private void Editar(int ProductoId)
     {
-        NavigationManager.NavigateTo($"/EditarProductos/{ProductoId}");
+        NavigationManager.NavigateTo($"/GourmetGrill/EditarProductos/{ProductoId}");
     }
 }
