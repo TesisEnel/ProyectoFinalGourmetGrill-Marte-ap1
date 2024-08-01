@@ -1,7 +1,7 @@
 ﻿@page "/GourmentGrill/Menu"
 
-@inject IClient<Productos> ProductosService
-@inject IClient<Ordenes> OrdenesService
+@inject IServer<Productos> ProductosService
+@inject IServer<Ordenes> OrdenesService
 @rendermode InteractiveServer
 @using Shared.Interfaces
 @using Shared.Models
