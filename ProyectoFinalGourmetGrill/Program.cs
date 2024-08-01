@@ -30,12 +30,6 @@ builder.Services.AddAuthentication(options => {
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
 
-// HttpClient
-//builder.Services.AddScoped(a => new HttpClient
-//{
-//    BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!) 
-//});
-
 //Blob Services
 var storageConnection = builder.Configuration["ConnectionStrings:GourmetGrill:Storage"];
 
