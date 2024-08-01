@@ -28,13 +28,13 @@ builder.Services.AddAuthentication(options => {
 
 // Configure DbContext with a connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
 
 // HttpClient
-builder.Services.AddScoped(a => new HttpClient
-{
-    BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!) 
-});
+//builder.Services.AddScoped(a => new HttpClient
+//{
+//    BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!) 
+//});
 
 //Blob Services
 var storageConnection = builder.Configuration["ConnectionStrings:GourmetGrill:Storage"];
@@ -45,9 +45,9 @@ builder.Services.AddAzureClients(azureBuilder =>
 });
 
 // Servicios
-builder.Services.AddScoped<IClient<Productos>, ProductosServiceClient>();
-builder.Services.AddScoped<IClient<CategoriaProductos>, CategoriaProductosServiceClient>();
-builder.Services.AddScoped<IClient<Ordenes>, OrdenServiceClient>();
+builder.Services.AddScoped<IServer<Productos>, ProductosService>();
+builder.Services.AddScoped<IServer<CategoriaProductos>, CategoriaProductosService>();
+builder.Services.AddScoped<IServer<Ordenes>, OrdenesService>();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
