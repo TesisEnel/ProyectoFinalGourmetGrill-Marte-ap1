@@ -1,7 +1,8 @@
-﻿@page "/GourmentGrill/Menu"
+﻿@page "/GourmetGrill/Menu"
 
 @inject IClient<Productos> ProductosService
 @inject IClient<Ordenes> OrdenesService
+@inject NavigationManager Navigation
 @rendermode InteractiveServer
 @using Shared.Interfaces
 @using Shared.Models
@@ -14,7 +15,7 @@
     </div>
     <div class="card-body sidebar-body">
         @if (orden.OrdenesDetalle.Count() == 0) {
-            <p>No hay productos en tu carrito.</p>
+            <p class="text-center"><strong>No hay productos en tu carrito.</strong></p>
         }
         else {
             @foreach (var detalle in orden.OrdenesDetalle) {
@@ -25,15 +26,16 @@
                     <div class="product-info">
                         <div class="text-center position-relative">
                             @if (detalle.Producto != null) {
-                                <button type="button" class="btn-close esquinaBtn" @onclick="()=>EliminarProducto(detalle)"></button>
-                                <h2 class="product-title text-center">@detalle.Producto.Nombre</h2>
-                                <p class="product-price">
+                                <h2 class="product-title">@detalle.Producto.Nombre</h2>
+                                <p class="product-price mt-3">
                                     Cantidad:
                                     <button type="button" class="btn btn-round" @onclick="()=>Disminuir(detalle)">-</button>
                                     @detalle.Cantidad
                                     <button type="button" class="btn btn-round" @onclick="()=>Aumentar(detalle)">+</button>
                                     <br />
+                                    <br />
                                     @((detalle.Cantidad * detalle.Producto.Precio).ToString("C"))
+                                    <button class="btn btn-round bi bi-trash3" @onclick="()=>EliminarProducto(detalle)"></button>
                                 </p>
                             }
                         </div>
@@ -48,7 +50,9 @@
             <strong>Total:</strong>
             <strong>@orden.OrdenesDetalle.Sum(x => x.Producto.Precio * x.Cantidad).ToString("C")</strong>
         </div>
-        <button class="btn btn-primary">Realizar Pedido</button>
+        <div class="text-center mt-3">
+            <button type="button" class="btn btnAgregar" @onclick="MostrarPantallaPedido"><strong>Continuar</strong></button>
+        </div>
     </div>
 </div>
 
@@ -77,38 +81,31 @@
                         { 4, "Bebidas" }
                     };
 
-                    // Ordenar la lista de productos por CategoriaId
-                    var productosAgrupados = ListaProductos.OrderBy(p => p.CategoriaId).ToList();
-                    int categoriaActual = -1;
+                    // Agrupar los productos por categoría
+                    var productosPorCategoria = ListaProductos.GroupBy(p => p.CategoriaId);
 
-                    int contador = 0;
-                    @foreach (var producto in ListaProductos) {
-                        @if (producto.CategoriaId != categoriaActual) {
-                            categoriaActual = producto.CategoriaId;
-                            contador = 0; // Reiniciar el contador para la nueva categoría
-                            <h2><strong>@categorias[producto.CategoriaId]</strong></h2>
-                        }
-
-                        @*Salto de linea cada 2 productos*@
-                        @if (contador % 2 == 0) {
-                            <div class="row"></div>
-                        }
-
-                        @*Contenido del Producto*@
-                        <div class="col-md-6 product-card fontSize mt-2">
-                            <div class="card borderCard d-flex flex-row">
-                                <div class="card-body flex-fill">
-                                    <h5 class="card-title text-center"><strong>@producto.Nombre</strong></h5>
-                                    <p class="card-text">@producto.Descripcion</p>
-                                    <p class="card-text text-center" style="font-size: 18px;"><b>@producto.Precio.ToString("C")</b></p>
-                                    <div class="text-center">
-                                        <button class="btn btnMas" @onclick="() => MostrarModalProducto(producto)">+</button>
+                    foreach (var grupo in productosPorCategoria) {
+                        <h2><strong>@categorias[grupo.Key]</strong></h2>
+                        <div class="row">
+                            @foreach (var producto in grupo) {
+                                @if(producto.Cantidad > 0) {
+                                    
+                                    <div class="col-md-6 product-card fontSize mt-2">
+                                        <div class="card borderCard d-flex flex-row">
+                                            <div class="card-body flex-fill">
+                                                <h5 class="card-title text-center"><strong>@producto.Nombre</strong></h5>
+                                                <p class="card-text">@producto.Descripcion</p>
+                                                <p class="card-text text-center" style="font-size: 18px;"><b>@producto.Precio.ToString("C")</b></p>
+                                                <div class="text-center">
+                                                    <button class="btn btnMas" @onclick="() => MostrarModalProducto(producto)">+</button>
+                                                </div>
+                                            </div>
+                                            <img src="@producto.ImagenUrl" class="borderBurguer img-fluid" alt="@producto.Nombre">
+                                        </div>
                                     </div>
-                                </div>
-                                <img src="@producto.ImagenUrl" class="borderBurguer img-fluid" alt="@producto.Nombre">
-                            </div>
+                                }
+                            }
                         </div>
-                        contador++;
                     }
                 }
             </div>
@@ -222,5 +219,14 @@
         productoSeleccionado = producto;
         currentCount = 1;
         Precio = productoSeleccionado.Precio;
+    }
+
+    public async Task GuardarOrden() {
+        await OrdenesService.AddObject(orden);
+        orden = new Ordenes();
+    }
+
+    private void MostrarPantallaPedido() {
+        Navigation.NavigateTo("/GourmentGrill/Pedido");
     }
 }
