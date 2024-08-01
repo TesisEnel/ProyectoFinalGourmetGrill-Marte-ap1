@@ -21,7 +21,7 @@
                             <h5 class="card-title text-center"><strong>@producto.Nombre</strong></h5>
                             <p class="card-text">@producto.Descripcion</p>
                             <div class="text-center">
-                                <a href="/GourmentGrill/Menu" class="btn btn-outline-primary">Ordernar</a>
+                                <a href="/GourmetGrill/Menu" class="btn btn-outline-primary">Ordernar</a>
                             </div>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
 </div>
 
 @code {
-    private List<Productos> productos;
+    private List<Productos> productos = new List<Productos>();
 
     protected override async Task OnInitializedAsync()
     {
