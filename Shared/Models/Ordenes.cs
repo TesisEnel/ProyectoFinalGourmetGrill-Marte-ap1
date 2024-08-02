@@ -27,7 +27,7 @@ public class Ordenes
     [ForeignKey("Estados")]
     public int EstadoId { get; set; }
 
-    public string? Descripcion { get; set; } = string.Empty;
+    public string? Observacion { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "El Teléfono es obligatorio")]
     [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "El número de teléfono debe tener el formato 800-000-0000")]
