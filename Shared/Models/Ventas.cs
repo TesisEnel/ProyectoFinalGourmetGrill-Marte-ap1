@@ -23,11 +23,12 @@ public class Ventas
     [ForeignKey("Ordenes")]
     public int OrdenId { get; set; }
 
-    [ForeignKey("MetodoPagos")]
-    public int MetodoPagoId { get; set; }
 
     [Required(ErrorMessage = "Es requerido")]
     public DateTime Fecha { get; set; } = DateTime.Now;
+
+    [ForeignKey("MetodoPagos")]
+    public int MetodoPagoId { get; set; }
 
     public float SubTotal { get; set; }
 
