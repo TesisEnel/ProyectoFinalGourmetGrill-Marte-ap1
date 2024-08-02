@@ -6,6 +6,7 @@ using ProyectoFinalGourmetGrill.Components;
 using ProyectoFinalGourmetGrill.Components.Account;
 using ProyectoFinalGourmetGrill.Data;
 using ProyectoFinalGourmetGrill.Services;
+using Radzen;
 using Shared.Interfaces;
 using Shared.Models;
 
@@ -52,6 +53,7 @@ builder.Services.AddScoped<MetodoPagos>();
 builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<IdentityUserService>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
+builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
