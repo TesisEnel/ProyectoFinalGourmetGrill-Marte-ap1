@@ -1,8 +1,8 @@
 ﻿@page "/GourmetGrill/CrearProducto"
 @using Shared.Interfaces
 @using Shared.Models
-@inject IClient<Productos> productoService
-@inject IClient<CategoriaProductos> categoriaService
+@inject IServer<Productos> productoService
+@inject IServer<CategoriaProductos> categoriaService
 @inject BlobServiceClient blobService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer

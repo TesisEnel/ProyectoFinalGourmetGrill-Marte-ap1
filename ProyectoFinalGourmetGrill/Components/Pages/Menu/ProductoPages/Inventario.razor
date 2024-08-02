@@ -5,8 +5,8 @@
 @* @attribute [Authorize(Roles = "Admin")] *@
 
 @inject NavigationManager NavigationManager
-@inject IClient<Productos> productoService
-@inject IClient<CategoriaProductos> categoriaService
+@inject IServer<Productos> productoService
+@inject IServer<CategoriaProductos> categoriaService
 @inject ApplicationDbContext dbContext
 
 @rendermode InteractiveServer
