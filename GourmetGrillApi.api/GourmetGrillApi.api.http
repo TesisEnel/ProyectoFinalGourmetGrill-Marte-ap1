@@ -1,6 +1,0 @@
-@GourmetGrillApi.api_HostAddress = http://localhost:5072
-
-GET {{GourmetGrillApi.api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

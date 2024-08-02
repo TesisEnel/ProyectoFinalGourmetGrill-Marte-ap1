@@ -1,0 +1,141 @@
+﻿@page "/GourmetGrill/EditarProductos/{ProductoId:int}"
+@using Shared.Interfaces
+@using Shared.Models
+@inject IServer<Productos> productoService
+@inject IServer<CategoriaProductos> categoriaService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Editar Producto</PageTitle>
+<EditForm Model="productos" OnValidSubmit="Editar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header fw-bold mb-0">
+                <h3><strong>Editar Producto</strong></h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <label class="form-label" for="nombre"><strong>Nombre</strong></label>
+                                <InputText class="form-control input-small" id="nombre" @bind-Value="productos.Nombre"></InputText>
+                                <ValidationMessage For="@(() => productos.Nombre)" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <label class="form-label" for="precio"><strong>Precio</strong></label>
+                                <InputNumber class="form-control input-small" id="precio" @bind-Value="productos.Precio" @oninput="ActualizarITBIS"></InputNumber>
+                                <ValidationMessage For="@(() => productos.Precio)" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <label class="form-label" for="cantidad"><strong>Cantidad</strong></label>
+                                <InputNumber class="form-control input-small" id="cantidad" @bind-Value="productos.Cantidad" @oninput="ActualizarDisponibilidad"></InputNumber>
+                                <ValidationMessage For="@(() => productos.Cantidad)" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <label class="form-label" for="itbis"><strong>ITBIS</strong></label>
+                                <InputNumber class="form-control input-small" id="itbis" @bind-Value="productos.ITBIS" ReadOnly></InputNumber>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <label class="form-label" for="categoria"><strong>Categoría</strong></label>
+                                <InputSelect class="form-control input-small" id="categoria" @bind-Value="productos.CategoriaId">
+                                    <option value="">Seleccione una categoría</option>
+                                    @foreach (var categoria in Categorias)
+                                    {
+                                        <option value="@categoria.CategoriaId">@categoria.Nombre</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => productos.CategoriaId)" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <label class="form-label" for="imagen"><strong>Imagen</strong></label>
+                                <InputText class="form-control input-small mt-2" id="imagen" @bind-Value="productos.ImagenUrl"></InputText>
+                                <ValidationMessage For="@(() => productos.ImagenUrl)" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 text-center">
+                        @if (!string.IsNullOrEmpty(productos.ImagenUrl))
+                        {
+                            <img src="@productos.ImagenUrl" alt="Imagen del producto" class="img-thumbnail img-small mb-2" />
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <a href="/Inventario" class="btn btn-outline-secondary ms-2">Volver</a>
+                <button type="submit" class="btn btn-outline-primary ms-2">Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int ProductoId { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public Productos productos { get; set; } = new Productos();
+    public List<CategoriaProductos> Categorias { get; set; } = new List<CategoriaProductos>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ProductoId > 0)
+        {
+            productos = await productoService.GetObject(ProductoId);
+        }
+        Categorias = (await categoriaService.GetAllObject()).ToList();
+    }
+
+    public async Task Editar()
+    {
+        var result = await productoService.UpdateObject(productos);
+        if (result)
+        {
+            NavigationManager.NavigateTo("/Inventario");
+        }
+        else
+        {
+            Mensaje = "Error al editar el producto";
+        }
+    }
+
+    private void ActualizarDisponibilidad(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int cantidad))
+        {
+            productos.Disponible = cantidad > 0;
+        }
+        else
+        {
+            productos.Disponible = false;
+        }
+    }
+
+    private void ActualizarITBIS(ChangeEventArgs e)
+    {
+        if (decimal.TryParse(e.Value?.ToString(), out decimal precio))
+        {
+            productos.ITBIS = (float)(precio * 0.18m);
+        }
+    }
+}
+
+<style>
+    .img-small {
+        width: 350px;
+        height: 300px;
+        border-radius: 25px;
+    }
+</style>

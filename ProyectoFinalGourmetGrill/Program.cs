@@ -6,6 +6,7 @@ using ProyectoFinalGourmetGrill.Components;
 using ProyectoFinalGourmetGrill.Components.Account;
 using ProyectoFinalGourmetGrill.Data;
 using ProyectoFinalGourmetGrill.Services;
+using Radzen;
 using Shared.Interfaces;
 using Shared.Models;
 
@@ -28,28 +29,35 @@ builder.Services.AddAuthentication(options => {
 
 // Configure DbContext with a connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// HttpClient
-builder.Services.AddScoped(a => new HttpClient
-{
-    BaseAddress = new Uri(builder.Configuration.GetSection("Uri").Value!) // Asegúrate de tener esta sección en appsettings.json
-});
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
 
 //Blob Services
 var storageConnection = builder.Configuration["ConnectionStrings:GourmetGrill:Storage"];
 
-builder.Services.AddAzureClients(azureBuilder =>
-{
+builder.Services.AddAzureClients(azureBuilder => {
     azureBuilder.AddBlobServiceClient(storageConnection);
 });
 
 // Servicios
-builder.Services.AddScoped<IClient<Productos>, ProductosServiceClient>();
-builder.Services.AddScoped<IClient<CategoriaProductos>, CategoriaProductosServiceClient>();
-builder.Services.AddScoped<IClient<Ordenes>, OrdenServiceClient>();
+builder.Services.AddScoped<IServerAsp<ApplicationUser>, UsersService>();
+builder.Services.AddScoped<IServerAsp<IdentityRole>, RolesService>();
+builder.Services.AddScoped<IServerAsp<IdentityUserRole<string>>, UserRolesService>();
+builder.Services.AddScoped<IServer<Productos>, ProductosService>();
+builder.Services.AddScoped<IServer<CategoriaProductos>, CategoriaProductosService>();
+builder.Services.AddScoped<IServer<Ordenes>, OrdenesService>();
+builder.Services.AddScoped<IServer<Ventas>, VentasService>();
+builder.Services.AddScoped<IServer<Estados>, EstadosService>();
+builder.Services.AddScoped<IServer<MetodoPagos>, MetodosPagosService>();
+builder.Services.AddScoped<ProductosService>();
+builder.Services.AddScoped<MetodoPagos>();
+builder.Services.AddScoped<UsersService>();
+builder.Services.AddScoped<IdentityUserService>();
+builder.Services.AddScoped<UserManager<ApplicationUser>>();
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<RoleManager<IdentityRole>>();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
@@ -59,12 +67,10 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+if (app.Environment.IsDevelopment()) {
     app.UseMigrationsEndPoint();
 }
-else
-{
+else {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
