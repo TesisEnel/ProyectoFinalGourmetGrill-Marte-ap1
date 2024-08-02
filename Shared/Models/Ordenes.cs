@@ -36,7 +36,7 @@ public class Ordenes
     public DateTime Fecha { get; set; } = DateTime.Now;
 
     [Range(0.01, 1000000000, ErrorMessage = "El Precio debe estar 0.01 y 1000000000")]
-    public float Precio { get; set; }
+    public float Monto { get; set; }
 
     [Range(0.01, 1000000000, ErrorMessage = "El ITBIS debe estar 0.01 y 1000000000")]
     public float ITBIS { get; set; }
