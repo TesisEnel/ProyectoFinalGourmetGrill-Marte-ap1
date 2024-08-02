@@ -20,7 +20,6 @@ public class IdentityUserService(UserManager<ApplicationUser> _userManager, Role
             return result;
         }
 
-
         var clienteRole = await _roleManager.FindByNameAsync("Cliente");
         if (clienteRole == null) {
             await _roleManager.CreateAsync(new IdentityRole("Cliente"));
@@ -42,6 +41,7 @@ public class IdentityUserService(UserManager<ApplicationUser> _userManager, Role
     public async Task<bool> GetNickNameAsync(string user) {
         return await _contexto.Users.FirstOrDefaultAsync(x => x.NickName == user) != null;
     }
+
     public async Task<bool> CedulaExistAsync(string user) {
         return await _contexto.Users.FirstOrDefaultAsync(x => x.Cedula == user) != null;
     }
@@ -74,7 +74,6 @@ public class IdentityUserService(UserManager<ApplicationUser> _userManager, Role
             }
             else {
                 _contexto.UserRoles.Add(new IdentityUserRole<string> { UserId = user.Id, RoleId = role!.Id });
-
             }
         }
         else {
@@ -88,7 +87,6 @@ public class IdentityUserService(UserManager<ApplicationUser> _userManager, Role
             }
             else {
                 _contexto.UserRoles.Add(new IdentityUserRole<string> { UserId = user.Id, RoleId = role!.Id });
-
             }
         }
         return await _contexto.SaveChangesAsync() > 0;

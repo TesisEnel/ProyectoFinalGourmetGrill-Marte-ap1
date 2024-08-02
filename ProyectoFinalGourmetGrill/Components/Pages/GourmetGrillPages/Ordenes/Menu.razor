@@ -1,9 +1,11 @@
 ﻿@page "/GourmetGrill/Menu"
 
-
-@rendermode InteractiveServer
 @using Shared.Interfaces
 @using Shared.Models
+@inject IServer<Productos> ProductosService
+@inject IServer<Ordenes> OrdenesService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
 
 
 @*Carrito*@

@@ -27,13 +27,19 @@ public class Ordenes
     [ForeignKey("Estados")]
     public int EstadoId { get; set; }
 
-    public string? Descripcion { get; set; } = string.Empty;
+    public string? Observacion { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "El Teléfono es obligatorio")]
     [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "El número de teléfono debe tener el formato 800-000-0000")]
     public string? Telefono { get; set; }
 
     public DateTime Fecha { get; set; } = DateTime.Now;
+
+    [Range(0.01, 1000000000, ErrorMessage = "El Precio debe estar 0.01 y 1000000000")]
+    public float Monto { get; set; }
+
+    [Range(0.01, 1000000000, ErrorMessage = "El ITBIS debe estar 0.01 y 1000000000")]
+    public float ITBIS { get; set; }
 
     [ForeignKey("OrdenesDetalleId")]
     public ICollection<OrdenesDetalle> OrdenesDetalle { get; set; } = new List<OrdenesDetalle>();
