@@ -55,6 +55,9 @@ builder.Services.AddScoped<IdentityUserService>();
 builder.Services.AddScoped<UserManager<ApplicationUser>>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<RoleManager<IdentityRole>>();
+builder.Services.AddScoped<NotificacionService>();
+
+builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
