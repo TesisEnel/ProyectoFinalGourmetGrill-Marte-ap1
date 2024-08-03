@@ -1,5 +1,5 @@
-﻿@page "/Inventario"
-@page "/Inventario/{ProductoId:int}"
+﻿@page "/GourmetGrill/Index"
+
 @using Shared.Interfaces
 @using Shared.Models
 @* @attribute [Authorize(Roles = "Admin")] *@
@@ -36,7 +36,7 @@
                 <div class="col-3">
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" selected>Elija una opción</option>
-                        <option value="id"><strong>Id</strong></option>
+                        <option value="ID"><strong>Id</strong></option>
                         <option value="descripcion"><strong>Descripci&oacute;n</strong></option>
                     </InputSelect>
                 </div>
@@ -101,8 +101,6 @@
 
 
 @code {
-    [Parameter]
-    public int ProductoId { get; set; }
     public List<Productos> Listaproductos { get; set; } = new List<Productos>();
     public string? Filtro { get; set; }
     public string? Mensaje { get; set; }
@@ -118,7 +116,7 @@
 
     public void MostrarPantallaCrear()
     {
-        NavigationManager.NavigateTo("/GourmetGrill/CrearProducto");
+        NavigationManager.NavigateTo("/GourmetGrill/Create");
     }
 
     public async Task Buscar()
@@ -180,6 +178,6 @@
 
     private void Editar(int ProductoId)
     {
-        NavigationManager.NavigateTo($"/GourmetGrill/EditarProductos/{ProductoId}");
+        NavigationManager.NavigateTo($"/GourmetGrill/Edit/{ProductoId}");
     }
 }

@@ -1,4 +1,4 @@
-﻿@page "/GourmetGrill/CrearProducto"
+﻿@page "/GourmetGrill/Create"
 @using Shared.Interfaces
 @using Shared.Models
 @inject IServer<Productos> productoService
@@ -117,7 +117,7 @@
 
     public void Volver()
     {
-        Navigation.NavigateTo("/Inventario");
+        Navigation.NavigateTo("/GourmetGrill/Index");
     }
 
     private void ActualizarDisponibilidad(ChangeEventArgs e)

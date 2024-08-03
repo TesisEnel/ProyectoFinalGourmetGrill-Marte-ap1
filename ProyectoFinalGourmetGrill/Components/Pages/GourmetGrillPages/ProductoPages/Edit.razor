@@ -1,4 +1,4 @@
-﻿@page "/GourmetGrill/EditarProductos/{ProductoId:int}"
+﻿@page "/GourmetGrill/Edit/{ProductoId:int}"
 @using Shared.Interfaces
 @using Shared.Models
 @inject IServer<Productos> productoService
@@ -103,7 +103,7 @@
         var result = await productoService.UpdateObject(productos);
         if (result)
         {
-            NavigationManager.NavigateTo("/Inventario");
+            NavigationManager.NavigateTo("/GourmetGrill/Index");
         }
         else
         {
