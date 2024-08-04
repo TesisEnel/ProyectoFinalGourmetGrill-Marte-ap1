@@ -257,15 +257,4 @@
         await JS.InvokeVoidAsync("localStorage.setItem", "orderDetails", detallesJson);
         navigation.NavigateTo($"/GourmetGrill/Pedido");
     }
-
-    // private void ContinuarPedido() {
-    //     // Navegar a la página de realizar pedido y pasar los detalles del carrito
-    //     navigation.NavigateTo($"/GourmetGrill/Pedido", new {detalle = orden.OrdenesDetalle});
-    // }
-
-    // private async Task MostrarPantallaPedido(int ordenId) {
-    //     await GuardarOrden();
-    //     await Task.Delay(2000);
-    //     navigation.NavigateTo($"/GourmentGrill/Pedido/{ordenId}");
-    // }
 }
