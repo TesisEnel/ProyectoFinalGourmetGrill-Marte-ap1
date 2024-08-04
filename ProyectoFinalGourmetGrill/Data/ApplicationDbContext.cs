@@ -4,9 +4,10 @@ using Shared.Models;
 
 namespace ProyectoFinalGourmetGrill.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
-    
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+
     public DbSet<CategoriaProductos> CategoriaProductos { get; set; }
     public DbSet<Productos> Productos { get; set; }
     public DbSet<Ordenes> Ordenes { get; set; }
@@ -20,6 +21,18 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         base.OnModelCreating(modelBuilder);
         ConfigureGeneralModel(modelBuilder);
         ConfigureProductosModel(modelBuilder);
+
+        // Configurar las relaciones
+        modelBuilder.Entity<Ordenes>()
+            .HasMany(o => o.OrdenesDetalle)
+            .WithOne(d => d.Orden)
+            .HasForeignKey(d => d.OrdenId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OrdenesDetalle>()
+            .HasOne(d => d.Producto)
+            .WithMany()
+            .HasForeignKey(d => d.ProductoId);
     }
 
     public void ConfigureGeneralModel(ModelBuilder modelBuilder) {
@@ -40,6 +53,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
              new CategoriaProductos { CategoriaId = 4, Nombre = "Bebidas" }
         );
     }
+
     public void ConfigureProductosModel(ModelBuilder modelBuilder) {
         modelBuilder.Entity<Productos>().HasData(
              new Productos { Nombre = "La Intensa", Cantidad = 50, Precio = 475, ITBIS = 85.5f, ProductoId = 1, CategoriaId = 1, Disponible = true, Descripcion = "Pan de Papa, Doble Carne de 95g, Doble Queso Pepper Jack, Mermelada de Arandanos, Pesto y Aderezo de Perejil", ImagenUrl = "https://stgourmetgrilldv001.blob.core.windows.net/gourmetweb/UltimateCrackBurger.jpg" },

@@ -41,6 +41,6 @@ public class Ordenes
     [Range(0.01, 1000000000, ErrorMessage = "El ITBIS debe estar 0.01 y 1000000000")]
     public float ITBIS { get; set; }
 
-    [ForeignKey("OrdenesDetalleId")]
+    // Navigation Properties
     public ICollection<OrdenesDetalle> OrdenesDetalle { get; set; } = new List<OrdenesDetalle>();
 }

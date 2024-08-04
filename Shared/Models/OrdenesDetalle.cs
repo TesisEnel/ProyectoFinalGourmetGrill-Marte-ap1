@@ -28,4 +28,7 @@ public class OrdenesDetalle
 
     [Required(ErrorMessage = "Es requerido")]
     public int Cantidad { get; set; }
+
+    // Navigation Property
+    public Ordenes? Orden { get; set; }
 }

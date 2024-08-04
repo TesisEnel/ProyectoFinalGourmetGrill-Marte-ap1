@@ -2,9 +2,11 @@
 
 @using Shared.Interfaces
 @using Shared.Models
+@using System.Text.Json
 
 @inject IServer<Productos> productosService
 @inject IServer<Ordenes> ordenesService
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 
@@ -51,7 +53,7 @@
             <strong>@orden.OrdenesDetalle.Sum(x => x.Producto.Precio * x.Cantidad).ToString("C")</strong>
         </div>
         <div class="text-center mt-3">
-            <button type="button" class="btn btnAgregar" @onclick="GuardarOrden"><strong>Continuar</strong></button>
+            <button type="button" class="btn btnAgregar" @onclick="ContinuarPedido"><strong>Continuar</strong></button>
         </div>
     </div>
 </div>
@@ -224,7 +226,8 @@
             var detallePedido = new OrdenesDetalle {
                     Producto = productoSeleccionado,
                     Precio = productoSeleccionado.Precio,
-                    Cantidad = currentCount
+                    Cantidad = currentCount,
+                    OrdenId = orden.OrdenId
             };
             orden.OrdenesDetalle.Add(detallePedido);
             Notificacion(ToastType.Success, "Producto agregado al carrito.");
@@ -249,17 +252,20 @@
         Precio = productoSeleccionado.Precio;
     }
 
-    public async Task GuardarOrden() {
-        try {
-            await ordenesService.AddObject(orden);
-        }catch (Exception ex) {
-            Notificacion(ToastType.Danger, ex.Message);
-        }
+    private async Task ContinuarPedido() {
+        var detallesJson = JsonSerializer.Serialize(orden.OrdenesDetalle);
+        await JS.InvokeVoidAsync("localStorage.setItem", "orderDetails", detallesJson);
+        navigation.NavigateTo($"/GourmetGrill/Pedido");
     }
 
-    private async Task MostrarPantallaPedido(int ordenId) {
-        await GuardarOrden();
-        await Task.Delay(2000);
-        navigation.NavigateTo($"/GourmentGrill/Pedido/{ordenId}");
-    }
+    // private void ContinuarPedido() {
+    //     // Navegar a la página de realizar pedido y pasar los detalles del carrito
+    //     navigation.NavigateTo($"/GourmetGrill/Pedido", new {detalle = orden.OrdenesDetalle});
+    // }
+
+    // private async Task MostrarPantallaPedido(int ordenId) {
+    //     await GuardarOrden();
+    //     await Task.Delay(2000);
+    //     navigation.NavigateTo($"/GourmentGrill/Pedido/{ordenId}");
+    // }
 }
