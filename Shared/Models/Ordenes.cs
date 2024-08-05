@@ -35,6 +35,10 @@ public class Ordenes
 
     public DateTime Fecha { get; set; } = DateTime.Now;
 
+    [ForeignKey("MetodoPagos")]
+    [Range(1, 3, ErrorMessage = "Seleccione un Metodo de Pago")]
+    public int MetodoPagoId { get; set; }
+
     [Range(0.01, 1000000000, ErrorMessage = "El Precio debe estar 0.01 y 1000000000")]
     public float Monto { get; set; }
 
@@ -43,4 +47,6 @@ public class Ordenes
 
     // Navigation Properties
     public ICollection<OrdenesDetalle> OrdenesDetalle { get; set; } = new List<OrdenesDetalle>();
+
+    public MetodoPagos? MetodoPago { get; set; }
 }
