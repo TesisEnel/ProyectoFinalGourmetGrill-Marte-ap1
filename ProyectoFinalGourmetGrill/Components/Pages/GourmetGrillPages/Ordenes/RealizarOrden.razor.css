@@ -1,0 +1,25 @@
+﻿.fondo{
+    background-color: white;
+}
+
+.bg-card{
+    border-radius: 10px;
+}
+
+.btnPagar {
+    color: white;
+    padding: 10px 10px;
+    align-items: end;
+    font-size: 16px;
+    border-radius: 15px;
+    background-color: black;
+    width: fit-content;
+}
+
+.letras{
+    font-style: italic;
+}
+
+.Verde{
+    color: limegreen;
+}
