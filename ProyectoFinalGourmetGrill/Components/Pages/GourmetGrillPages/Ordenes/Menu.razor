@@ -13,14 +13,14 @@
 @*Carrito*@
 <div class="sidebar">
     <div class="card-header text-center">
-        <strong style="font-size: 20px;">Tu Carrito (@orden.OrdenesDetalle.Count())</strong>
+        <strong style="font-size: 20px;">Tu Carrito (@Orden.OrdenesDetalle.Count())</strong>
     </div>
     <div class="card-body sidebar-body">
-        @if (orden.OrdenesDetalle.Count() == 0) {
+        @if (Orden.OrdenesDetalle.Count() == 0) {
             <p class="text-center"><strong>No hay productos en tu carrito.</strong></p>
         }
         else {
-            @foreach (var detalle in orden.OrdenesDetalle) {
+            @foreach (var detalle in Orden.OrdenesDetalle) {
                 <div class="espacioProducto" style="font-size: 10px;">
                     @if (detalle.Producto != null) {
                         <img src="@detalle.Producto.ImagenUrl" alt="Burguer" class="product-image" />
@@ -50,7 +50,7 @@
     <div class="card-footer">
         <div class="d-flex justify-content-between">
             <strong>Total:</strong>
-            <strong>@orden.OrdenesDetalle.Sum(x => x.Producto.Precio * x.Cantidad).ToString("C")</strong>
+            <strong>@Orden.OrdenesDetalle.Sum(x => x.Precio * x.Cantidad).ToString("C")</strong>
         </div>
         <div class="text-center mt-3">
             <button type="button" class="btn btnAgregar" @onclick="ContinuarPedido"><strong>Continuar</strong></button>
@@ -156,7 +156,7 @@
 @code {
     private List<Productos> ListaProductos = new List<Productos>();
     public List<ToastMessage> Mensaje = new List<ToastMessage>();
-    private Ordenes orden { get; set; } = new Ordenes();
+    private Ordenes Orden { get; set; } = new Ordenes();
     public Productos productoSeleccionado { get; set; } = new Productos();
     public CategoriaProductos Categoria { get; set; } = new CategoriaProductos();
     public bool modalProducto { get; set; }
@@ -221,22 +221,23 @@
 
 
     public async Task AgregarProducto(Productos producto) {
-        var validar = orden.OrdenesDetalle.FirstOrDefault(x => x.Producto.ProductoId == producto.ProductoId);
+        var validar = Orden.OrdenesDetalle.FirstOrDefault(x => x.Producto.ProductoId == producto.ProductoId);
         if (validar == null) {
             var detallePedido = new OrdenesDetalle {
                     Producto = productoSeleccionado,
+                    ProductoId = productoSeleccionado.ProductoId,
                     Precio = productoSeleccionado.Precio,
                     Cantidad = currentCount,
-                    OrdenId = orden.OrdenId
+                    OrdenId = Orden.OrdenId
             };
-            orden.OrdenesDetalle.Add(detallePedido);
+            Orden.OrdenesDetalle.Add(detallePedido);
             Notificacion(ToastType.Success, "Producto agregado al carrito.");
         }
         CerrarModal();
     }
 
     public void EliminarProducto(OrdenesDetalle detalle) {
-        orden.OrdenesDetalle.Remove(detalle);
+        Orden.OrdenesDetalle.Remove(detalle);
         Notificacion(ToastType.Success, "Producto eliminado del carrito.");
     }
 
@@ -253,8 +254,20 @@
     }
 
     private async Task ContinuarPedido() {
-        var detallesJson = JsonSerializer.Serialize(orden.OrdenesDetalle);
+        var detallesJson = JsonSerializer.Serialize(Orden.OrdenesDetalle);
         await JS.InvokeVoidAsync("localStorage.setItem", "orderDetails", detallesJson);
         navigation.NavigateTo($"/GourmetGrill/Pedido");
+
+        // Orden.Monto = Orden.OrdenesDetalle.Sum(x => x.Precio * x.Cantidad);
+        // Orden.ITBIS = Orden.OrdenesDetalle.Sum(x => x.Producto.ITBIS * x.Cantidad); // Asegúrate de calcular el ITBIS correctamente
+
+        // // Asigna otros detalles de la orden
+        // Orden.NombreCliente = "Pedro"; // Reemplaza con el nombre del cliente real
+        // Orden.ApellidoCliente = "Osorio"; // Reemplaza con el apellido del cliente real
+        // Orden.Telefono = "800-000-0000"; // Reemplaza con el teléfono real
+        // Orden.EstadoId = 1; // Reemplaza con el estado real
+
+        // await ordenesService.AddObject(Orden);
+        // Notificacion(ToastType.Success, "Orden realizada con éxito");
     }
 }
