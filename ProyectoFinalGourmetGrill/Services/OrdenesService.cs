@@ -11,11 +11,13 @@ public class OrdenesService(ApplicationDbContext _contexto) : IServer<Ordenes>
     public Task<List<Ordenes>> GetAllObject() {
         return _contexto.Ordenes
             .Include(d => d.OrdenesDetalle)
+            .Include(m => m.MetodoPago)
             .ToListAsync();
     }
     public async Task<Ordenes> GetObject(int id) {
         return await _contexto.Ordenes
             .Include(d => d.OrdenesDetalle)
+            .Include(m => m.MetodoPago)
             .FirstOrDefaultAsync(r => r.OrdenId == id);
     }
 
