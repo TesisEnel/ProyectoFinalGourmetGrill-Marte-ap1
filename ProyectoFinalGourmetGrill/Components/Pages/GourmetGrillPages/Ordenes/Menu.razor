@@ -257,17 +257,5 @@
         var detallesJson = JsonSerializer.Serialize(Orden.OrdenesDetalle);
         await JS.InvokeVoidAsync("localStorage.setItem", "orderDetails", detallesJson);
         navigation.NavigateTo($"/GourmetGrill/Pedido");
-
-        // Orden.Monto = Orden.OrdenesDetalle.Sum(x => x.Precio * x.Cantidad);
-        // Orden.ITBIS = Orden.OrdenesDetalle.Sum(x => x.Producto.ITBIS * x.Cantidad); // Asegúrate de calcular el ITBIS correctamente
-
-        // // Asigna otros detalles de la orden
-        // Orden.NombreCliente = "Pedro"; // Reemplaza con el nombre del cliente real
-        // Orden.ApellidoCliente = "Osorio"; // Reemplaza con el apellido del cliente real
-        // Orden.Telefono = "800-000-0000"; // Reemplaza con el teléfono real
-        // Orden.EstadoId = 1; // Reemplaza con el estado real
-
-        // await ordenesService.AddObject(Orden);
-        // Notificacion(ToastType.Success, "Orden realizada con éxito");
     }
 }
