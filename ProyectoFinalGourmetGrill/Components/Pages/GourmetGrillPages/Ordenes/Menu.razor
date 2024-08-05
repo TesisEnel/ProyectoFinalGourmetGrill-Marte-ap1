@@ -231,14 +231,14 @@
                     OrdenId = Orden.OrdenId
             };
             Orden.OrdenesDetalle.Add(detallePedido);
-            Notificacion(ToastType.Success, "Producto agregado al carrito.");
+            
         }
         CerrarModal();
     }
 
     public void EliminarProducto(OrdenesDetalle detalle) {
         Orden.OrdenesDetalle.Remove(detalle);
-        Notificacion(ToastType.Success, "Producto eliminado del carrito.");
+        
     }
 
     public void CerrarModal() {
