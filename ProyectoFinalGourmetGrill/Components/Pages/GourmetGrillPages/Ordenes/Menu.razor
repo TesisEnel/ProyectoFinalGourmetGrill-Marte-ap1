@@ -127,6 +127,7 @@
                 <div class="contenidoModal p-4">
                     <h5 class="modal-title"><strong>@productoSeleccionado.Nombre</strong></h5>
                     <p class="mt-2">@productoSeleccionado.Descripcion</p>
+                    <p class="mt-2 text-center"><strong>(Itbis incluido)</strong></p>
                     <p class="text-center"><strong>Precio: @productoSeleccionado.Precio.ToString("C")</strong></p>
 
                     <div class="row d-flex align-items-center mt-5 ms-4">
@@ -160,7 +161,6 @@
     public Productos productoSeleccionado { get; set; } = new Productos();
     public CategoriaProductos Categoria { get; set; } = new CategoriaProductos();
     public bool modalProducto { get; set; }
-    public bool modalEditarProducto { get; set; }
     public float Precio { get; set; }
     private int currentCount = 1;
 
@@ -254,6 +254,10 @@
     }
 
     private async Task ContinuarPedido() {
+        if(Orden.OrdenesDetalle.Count() == 0) {
+            return;
+        }
+
         var detallesJson = JsonSerializer.Serialize(Orden.OrdenesDetalle);
         await JS.InvokeVoidAsync("localStorage.setItem", "orderDetails", detallesJson);
         navigation.NavigateTo($"/GourmetGrill/Pedido");
