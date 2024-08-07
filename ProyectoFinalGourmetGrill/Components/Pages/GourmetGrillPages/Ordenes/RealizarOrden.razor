@@ -5,13 +5,14 @@
 @inject IServer<Productos> productoService
 @inject IJSRuntime JS
 @inject ApplicationDbContext context
+@rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using Shared.Interfaces
 @using Shared.Models
 @using System.Text.Json
 @using System.Transactions
 
-<h3 class="text-center"><strong>Seleccionar Método de Pago</strong></h3>
+<h3 class="text-center"><strong>Tu Pedido</strong></h3>
 <EditForm Model="Orden">
     <DataAnnotationsValidator />
     <div class="mt-5 row w-100">
@@ -49,7 +50,7 @@
                         <div class="col-auto">
                             <h2 class="h5 fw-semibold">M&eacute;todo de pago</h2>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-auto d-flex">
                             <label class="form-label"></label>
                             <InputSelect class="form-select" @bind-Value="Orden.MetodoPagoId">
                                 <option value="">Selecciona un m&eacute;todo de pago</option>
@@ -57,6 +58,9 @@
                                     <option value="@metodo.MetodoPagoId">@metodo.Nombre</option>
                                 }
                             </InputSelect>
+                            <div class="col-auto" style="display: @(Orden.MetodoPagoId == 2 ? "block" : "none")">
+                                <button type="button" class="btn btnAdd" @onclick="MostrarModalPago">+</button>
+                            </div>
                         </div>
                     </div>
                     
@@ -69,15 +73,79 @@
     </div>
 </EditForm>
 
+@*Modal del Producto*@
+<div class="modal fade" id="modalPago1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalPago1Label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPago1Label"><strong>Agregar Tarjeta</strong></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <EditForm Model="Tarjeta" OnValidSubmit="Guardar">
+                <DataAnnotationsValidator />
+                @*Body*@
+                <div class="modal-body">
+                    <div class="row">
+                        @*NombreTitular*@
+                        <div class="col-6">
+                            <label class="form-label" for="nombreTitular"><strong>Nombre Titular</strong></label>
+                            <InputText class="form-control" id="nombreTitular" @bind-Value="Tarjeta.NombreTitular" />
+                            <ValidationMessage For="@(() => Tarjeta.NombreTitular)" />
+                        </div>
+                        @*NumeroTarjeta*@
+                        <div class="col-6">
+                            <label class="form-label" for="numeroTarjeta"><strong>N&uacute;mero de la tarjeta</strong></label>
+                            <InputText class="form-control" id="numeroTarjeta" @bind-Value="Tarjeta.NumeroTarjeta" />
+                            <ValidationMessage For="@(() => Tarjeta.NumeroTarjeta)" />
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        @*Codigo de Seguridad*@
+                        <div class="col-4">
+                            <label class="form-label" for="codigo"><strong>CVV</strong></label>
+                            <InputNumber class="form-control" id="codigo" @bind-Value="Tarjeta.CodigoSeguridad" />
+                            <ValidationMessage For="@(() => Tarjeta.CodigoSeguridad)" />
+                        </div>
+                        @*Fecha de Vencimiento*@
+                        <div class="col-4">
+                            <label class="form-label" for="fechaVencimiento"><strong>Fecha de Vencimiento</strong></label>
+                            <InputDate class="form-control" id="fechaVencimiento" @bind-Value="Tarjeta.FechaVencimiento" />
+                            <ValidationMessage For="@(() => Tarjeta.FechaVencimiento)" />
+                        </div>
+                        @*Monto a Pagar*@
+                        <div class="col-4">
+                            <label class="form-label" for="montoPagar"><strong>Monto a Pagar</strong></label>
+                            <InputNumber class="form-control" id="montoPagar" @bind-Value="Tarjeta.MontoPagar" />
+                            <ValidationMessage For="@(() => Tarjeta.MontoPagar)" />
+                        </div>
+                    </div>
+                </div>
+                @*Footer*@
+                <div class="modal-footer">
+                    <button type="button" class="btn btnAdd" data-bs-dismiss="modal" @onclick="Guardar">Guardar</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
 
 
+@if (modalPago) {
+    <script>
+        var myModal = new bootstrap.Modal(document.getElementById('modalPago1'));
+        myModal.show();
+    </script>
+}
 
 
 @code {
     public Ordenes Orden { get; set; } = new Ordenes();
+    public Tarjetas Tarjeta { get; set; } = new Tarjetas();
     private List<MetodoPagos> MetodoDePago = new List<MetodoPagos>();
     private List<OrdenesDetalle> detalle { get; set; } = new List<OrdenesDetalle>();
     public List<ToastMessage> Mensaje = new List<ToastMessage>();
+    public bool modalPago { get; set; }
+
 
     protected override async Task OnInitializedAsync() {
         await CargarDatosAsync();
@@ -121,14 +189,13 @@
 
             //Orden.OrdenesDetalle = detalle;
             Orden.Monto = detalle.Sum(x => x.Precio * x.Cantidad);
-            Orden.ITBIS = detalle.Sum(x => x.Producto.ITBIS * x.Cantidad); // Asegúrate de calcular el ITBIS correctamente
-                                                                           // Orden.OrdenesDetalle = detalle;
-                                                                           // Aquí puedes asignar otras propiedades necesarias como el cliente y otros detalles
-            Orden.NombreCliente = "Angel"; // Reemplaza con el nombre del cliente real
-            Orden.ApellidoCliente = "Luis"; // Reemplaza con el apellido del cliente real
-            Orden.Telefono = "800-000-0000"; // Reemplaza con el teléfono real
+            Orden.ITBIS = detalle.Sum(x => x.Producto.ITBIS * x.Cantidad); 
+
+            Orden.NombreCliente = "DjMarte"; // Reemplaza con el nombre del cliente real
+            Orden.ApellidoCliente = "Lebron"; // Reemplaza con el apellido del cliente real
+            Orden.Telefono = "802-234-1233"; // Reemplaza con el teléfono real
             Orden.EstadoId = 1; // Reemplaza con el estado real
-                                //Orden.MetodoPagoId = 1; // Reemplaza con el método de pago real
+
 
             // context.Ordenes.Add(Orden);
             // await context.SaveChangesAsync();
@@ -148,4 +215,18 @@
     private void Volver() {
         navigation.NavigateTo($"/GourmetGrill/Menu");
     }
+
+    private void CerrarModalPago() {
+        modalPago = false;
+    }
+
+    private void Guardar() {
+        modalPago = false;
+    }
+
+    private void MostrarModalPago() {
+        modalPago = true;
+
+    }
+
 }
