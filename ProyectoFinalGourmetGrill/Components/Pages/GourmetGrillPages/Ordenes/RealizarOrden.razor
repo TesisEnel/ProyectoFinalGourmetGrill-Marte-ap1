@@ -154,7 +154,7 @@
 
     protected override async Task OnInitializedAsync() {
         await CargarDatosAsync();
-        
+
     }
 
     public void Notificacion(ToastType toastType, string message) => Mensaje.Add(CrearNotificacion(toastType, message));
@@ -214,15 +214,16 @@
             Orden.ITBIS = detalle.Sum(x => x.Producto.ITBIS * x.Cantidad);
 
             // Asignar detalles del usuario a la orden
+            Orden.ClienteId = user.Id;
             Orden.NombreCliente = user.Nombre;
             Orden.Telefono = user.PhoneNumber; // Asigna el teléfono real del usuario
-            Orden.EstadoId = 1; // Reemplaza con el estado real
+            Orden.EstadoId = 1; // Reemplaza con el estado real           
 
             // Guardar la orden
             await OrdenesService.AddObject(Orden);
             Notificacion(ToastType.Success, "Orden realizada con éxito");
 
-            timer = new Timer(90000); // 1:30 minutos en milisegundos
+            timer = new Timer(10000); // 1:30 minutos en milisegundos
             timer.Elapsed += async (sender, e) => await OnTimedEvent();
             timer.AutoReset = true;
             timer.Enabled = true;
@@ -242,13 +243,13 @@
 
         switch (orden.EstadoId) {
             case 1: // Pendiente
-                orden.EstadoId = 2; // Preparando
+                orden.EstadoId = 1; // Pendiente
                 break;
             case 2: // Preparando
-                orden.EstadoId = 3; // YA ESTÁ LISTA
+                orden.EstadoId = 2; // YA ESTÁ LISTA
                 break;
             case 3: // YA ESTÁ LISTA
-                orden.EstadoId = 4; // Cancelado
+                orden.EstadoId = 3; // YA ESTÁ LISTA
                 break;
         }
 
@@ -256,8 +257,7 @@
         context.Ordenes.Update(orden);
         await context.SaveChangesAsync();
 
-        // Notificación de actualización
-        // Notificacion(ToastType.Info, $"El estado de la orden ha cambiado a {orden.NombreEstado}");
+       
     }
 
     private async Task OnTimedEvent() {
