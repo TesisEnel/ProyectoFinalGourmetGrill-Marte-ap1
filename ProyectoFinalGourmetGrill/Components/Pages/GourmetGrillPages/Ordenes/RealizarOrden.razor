@@ -16,6 +16,8 @@
 @using System.Transactions
 @using System.Timers
 
+@attribute [Authorize(Roles = "Admin, Cliente")]
+
 <Toasts class="p-3" Messages="Mensaje" Delay="3000" Placement="ToastsPlacement.TopLeft" />
 <h3 class="text-center"><strong>Tu Pedido</strong></h3>
 <EditForm Model="Orden">
