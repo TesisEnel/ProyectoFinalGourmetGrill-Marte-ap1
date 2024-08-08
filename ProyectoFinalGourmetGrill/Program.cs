@@ -28,7 +28,7 @@ builder.Services.AddAuthentication(options => {
     .AddIdentityCookies();
 
 // Configure DbContext with a connection string
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
 
 //Blob Services

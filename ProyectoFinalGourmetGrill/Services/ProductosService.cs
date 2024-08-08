@@ -3,58 +3,71 @@ using ProyectoFinalGourmetGrill.Data;
 using Shared.Interfaces;
 using Shared.Models;
 using System.Linq.Expressions;
-using System.Net.Http.Json;
 
-namespace ProyectoFinalGourmetGrill.Services;
-
-public class ProductosService(ApplicationDbContext _contexto) : IServer<Productos>
+namespace ProyectoFinalGourmetGrill.Services
 {
-    public async Task<Productos> GetObject(int id) {
-        return await _contexto.Productos.FindAsync(id);
-    }
+    public class ProductosService : IServer<Productos>
+    {
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-    public async Task<List<Productos>> GetAllObject() {
-        return await _contexto.Productos
-            .Include(c => c.Categoria)
-            .ToListAsync();
-    }
-
-    public async Task<Productos> AddObject(Productos producto) {
-        _contexto.Productos.Add(producto);
-        await _contexto.SaveChangesAsync();
-        return producto;
-    }
-
-    public async Task<bool> UpdateObject(Productos producto) {
-        _contexto.Entry(producto).State = EntityState.Modified;
-        return await _contexto.SaveChangesAsync() > 0;
-    }
-
-    public async Task<Productos?> Search(int productoId) {
-        return await _contexto.Productos.AsNoTracking().FirstOrDefaultAsync(a => a.ProductoId == productoId);
-    }
-
-    public async Task<bool> DeleteObject(int id) {
-        var producto = await _contexto.Productos.FindAsync(id);
-        if (producto == null) {
-            return false;
+        public ProductosService(IDbContextFactory<ApplicationDbContext> contextFactory) {
+            _contextFactory = contextFactory;
         }
-        _contexto.Productos.Remove(producto);
-        return await _contexto.SaveChangesAsync() > 0;
-    }
-    public async Task<List<Productos>> GetObjectByCondition(Expression<Func<Productos, bool>> expression) {
-        return await _contexto.Productos
-            .AsNoTracking()
-            .Where(expression)
-            .ToListAsync();
-    }
 
-    //public async Task<string?> GetCategoriaNombre(int productoId)
-    //{
-    //    var producto = await _contexto.Productos
-    //        .Include(p => p.CategoriaId)
-    //        .FirstOrDefaultAsync(p => p.ProductoId == productoId);
+        public async Task<Productos> GetObject(int id) {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Productos.FindAsync(id);
+        }
 
-    //    return producto.CategoriaId.;
-    //}
+        public async Task<List<Productos>> GetAllObject() {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Productos
+                .Include(c => c.Categoria)
+                .ToListAsync();
+        }
+
+        public async Task<Productos> AddObject(Productos producto) {
+            using var context = _contextFactory.CreateDbContext();
+            context.Productos.Add(producto);
+            await context.SaveChangesAsync();
+            return producto;
+        }
+
+        public async Task<bool> UpdateObject(Productos producto) {
+            using var context = _contextFactory.CreateDbContext();
+            context.Productos.Update(producto);
+            var modificado = await context.SaveChangesAsync() > 0;
+            context.Entry(producto).State = EntityState.Modified;
+            return modificado;
+        }
+
+        public async Task<Productos?> Search(int productoId) {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Productos.AsNoTracking().FirstOrDefaultAsync(a => a.ProductoId == productoId);
+        }
+
+        public async Task<bool> DeleteObject(int id) {
+            using var context = _contextFactory.CreateDbContext();
+            var producto = await context.Productos.FindAsync(id);
+            if (producto == null) {
+                return false;
+            }
+            context.Productos.Remove(producto);
+            return await context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> Exist(int id, string nombre) {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Productos
+                .AnyAsync(p => p.ProductoId != id && p.Nombre.ToLower().Equals(nombre.ToLower()));
+        }
+
+        public async Task<List<Productos>> GetObjectByCondition(Expression<Func<Productos, bool>> expression) {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Productos
+                .AsNoTracking()
+                .Where(expression)
+                .ToListAsync();
+        }
+    }
 }
