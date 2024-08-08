@@ -1,4 +1,4 @@
-﻿﻿﻿@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
@@ -12,9 +12,9 @@
                 <AuthorizeView Roles="Admin">
                     <Authorized Context="Admin">
                         <NavLink class="btn btn-link" href="/GourmetGrill/Productos/Index">Inventario</NavLink>
-                        <NavLink class="btn btn-link" href="/GourmetGrill/Ordenes/Index">Ordenes</NavLink>
                     </Authorized>
                 </AuthorizeView>
+                <NavLink class="btn btn-link" href="/GourmetGrill/Ordenes/Index">Ordenes</NavLink>
                 <span class="btn btn-link text-black">USUARIO: @nickName </span>
                 <form action="Account/Logout" method="post">
                     <div class="col text-end">
