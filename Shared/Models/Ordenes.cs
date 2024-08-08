@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace Shared.Models;
 
-public class Ordenes
-{
+public class Ordenes {
     [Key]
     public int OrdenId { get; set; }
 
@@ -19,10 +19,6 @@ public class Ordenes
     [Required(ErrorMessage = "El Nombre del Cliente es Obligatorio")]
     [RegularExpression("^[a-zA-Z ]+$", ErrorMessage = "El Nombre debe Contener Solo letras.")]
     public string? NombreCliente { get; set; }
-
-    [Required(ErrorMessage = "El Apellido del cliente es obligatorio")]
-    [RegularExpression("^[a-zA-Z ]+$", ErrorMessage = "El Apellido debe contener solo letras.")]
-    public string? ApellidoCliente { get; set; }
 
     [ForeignKey("Estados")]
     public int EstadoId { get; set; }
@@ -49,4 +45,5 @@ public class Ordenes
     public ICollection<OrdenesDetalle> OrdenesDetalle { get; set; } = new List<OrdenesDetalle>();
 
     public MetodoPagos? MetodoPago { get; set; }
+
 }
