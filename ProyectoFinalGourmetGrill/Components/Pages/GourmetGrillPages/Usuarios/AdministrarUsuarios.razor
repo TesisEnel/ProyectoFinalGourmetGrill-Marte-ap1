@@ -4,8 +4,6 @@
 @using Radzen
 @using Shared.Interfaces
 
-@* @attribute [Authorize(Roles = "Admin")] *@
-
 @rendermode InteractiveServer
 @inject IServerAsp<ApplicationUser> usuariosService
 @inject IdentityUserService identityUserService
@@ -14,10 +12,11 @@
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 @inject AuthenticationStateProvider AuthenticationState
+@attribute [Authorize(Roles = "Admin")]
 <PageTitle>Administrar Usuarios</PageTitle>
 
 <div class="container">
-    <RadzenNotification />
+
     <div class="card shadow-lg">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="fw-bold text-center">Usuarios</h3>
@@ -38,7 +37,6 @@
                             </InputSelect>
                         </div>
                         <div class="col-auto">
-
                             @if (Opcion == 1)
                             {
                                 <div class="input-group justify-content-end">
@@ -65,14 +63,10 @@
             <table class="table table-light table-hover table-striped table-bordered text-center">
                 <thead>
                     <tr class="fw-bold">
-
                         <th scope="col">Nombre de Usuario</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Apellido</th>
+                        <th scope="col">Nombre</th>                   
                         <th scope="col">Email</th>
                         <th scope="col">Rol</th>
-                        <th scope="col">Cambiar Rol</th>
-
                     </tr>
                 </thead>
                 <tbody>
@@ -86,22 +80,7 @@
                                 <td>@item.NickName</td>
                                 <td>@item.Nombre</td>
                                 <td>@item.Email</td>
-                                @if (rol != null)
-                                {
-                                    <td>@rol.Name</td>
-                                    if (rol.Name != "Cliente")
-                                    {
-                                        <td>
-                                            <button class="btn btn-info fw-bold text-light" @onclick=@(() => CambiarRol(item,"Cliente")) disabled="@Flag"><i class="bi bi-arrow-left-right"></i> Cambiar a Cliente</button>
-                                        </td>
-                                    }
-                                    else if (rol.Name != "Admin")
-                                    {
-                                        <td>
-                                            <button class="btn btn-info fw-bold text-light" @onclick=@(() => CambiarRol(item,"Admin")) disabled="@Flag"><i class="bi bi-arrow-left-right"></i> Cambiar a Admin</button>
-                                        </td>
-                                    }
-                                }
+                                <td>@rol?.Name</td>
                             </tr>
                         }
                     }
@@ -110,6 +89,7 @@
         </div>
     </div>
 </div>
+
 @code {
     public bool Flag = false;
     public List<ApplicationUser> usuarios { get; set; } = new List<ApplicationUser>();
@@ -117,92 +97,60 @@
     public IdentityRole role { get; set; } = new IdentityRole();
     public List<IdentityRole> roles { get; set; } = new List<IdentityRole>();
     public List<IdentityUserRole<string>> userRoles { get; set; } = new List<IdentityUserRole<string>>();
-
     public int Opcion { get; set; }
     public AuthenticationState authState { get; set; } = default!;
     public ApplicationUser usuarioAuth { get; set; } = new ApplicationUser();
+
     protected override async Task OnInitializedAsync()
     {
         usuarios = await usuariosService.GetAllObject();
         roles = await rolesService.GetAllObject();
         userRoles = await userRolesService.GetAllObject();
         authState = await AuthenticationState.GetAuthenticationStateAsync();
-        usuarioAuth = (usuarios.FirstOrDefault(u => u.UserName == authState.User.Identity?.Name))!;
+        usuarioAuth = usuarios.FirstOrDefault(u => u.UserName == authState.User.Identity?.Name)!;
     }
 
     public async Task Buscar()
     {
-        if(Opcion == 1 && !string.IsNullOrEmpty(usuario.NickName))
+        if (Opcion == 1 && !string.IsNullOrEmpty(usuario.NickName))
         {
             var user0 = await usuariosService.GetAllObject();
             usuarios = user0.Where(v => v.NickName!.ToLower().Contains(usuario.NickName!.ToLower())).ToList();
         }
-        else if(Opcion == 2)
+        else if (Opcion == 2)
         {
             usuarios = new List<ApplicationUser>();
             var users1 = await usuariosService.GetAllObject();
             foreach (var item in users1)
             {
                 var role = await identityUserService.GetRoleAsync(item);
-                if(role?.Name == "Admin")
+                if (role?.Name == "Admin")
                 {
                     usuarios.Add(item);
                 }
             }
         }
-        else if(Opcion == 3)
+        else if (Opcion == 3)
         {
             usuarios = new List<ApplicationUser>();
             var users2 = await usuariosService.GetAllObject();
             foreach (var item in users2)
             {
                 var role = await identityUserService.GetRoleAsync(item);
-                if(role?.Name == "Cliente")
+                if (role?.Name == "Cliente")
                 {
                     usuarios.Add(item);
                 }
             }
         }
-        else if(Opcion == 4)
+        else if (Opcion == 4)
         {
             usuarios = await usuariosService.GetAllObject();
         }
     }
 
-    public async Task CambiarRol(ApplicationUser user, string newrole)
+    private void NavigateToCrearUsuario()
     {
-        Flag = true;
-        var resultado = await identityUserService.ChangeUserRoleAsync(user, newrole);
-        if (resultado)
-        {
-
-            var mensaje = new NotificationMessage
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = "Rol Cambiado",
-                    Detail = $"El rol del usuario {user.NickName} ha sido cambiado correctamente a {newrole}",
-                    Duration = 5000
-                };
-            NotificationService.Notify(mensaje);
-        }
-        else
-        {
-            Flag = false;
-            var mensaje = new NotificationMessage
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = "Error",
-                    Detail = "Rol no cambiado",
-                    Duration = 5000
-                };
-            NotificationService.Notify(mensaje);
-            return;
-        }
-        await Task.Delay(3200);
-        NavigationManager.NavigateTo("AdministrarUsuarios", forceLoad: true);
-    }
-
-    private void NavigateToCrearUsuario() {
         NavigationManager.NavigateTo("/CrearUsuario");
     }
 }
