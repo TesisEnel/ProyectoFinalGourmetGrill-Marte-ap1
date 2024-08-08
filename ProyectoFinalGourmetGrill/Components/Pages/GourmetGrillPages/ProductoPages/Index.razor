@@ -1,8 +1,8 @@
-﻿@page "/GourmetGrill/Index"
+﻿@page "/GourmetGrill/Productos/Index"
 
 @using Shared.Interfaces
 @using Shared.Models
-@* @attribute [Authorize(Roles = "Admin")] *@
+@attribute [Authorize(Roles = "Admin")]
 
 @inject NavigationManager NavigationManager
 @inject IServer<Productos> productoService
@@ -18,7 +18,7 @@
     <div class="card shadow-lg">
         @*Header*@
         <div class="card-header text-center">
-             <h3><strong>Inventario</strong></h3>
+            <h3><strong>Inventario</strong></h3>
         </div>
         @*Body*@
         <div class="card-body">
@@ -56,7 +56,7 @@
             </div>
             @*Tabla*@
             <div class="text-center mt-3">
-                <table class="table table-bordered">
+                <table class="table table-striped table-borderless">
                     <thead>
                         <tr class="bg-warning">
                             <th>Producto</th>
@@ -98,8 +98,6 @@
     </div>
 </div>
 
-
-
 @code {
     public List<Productos> Listaproductos { get; set; } = new List<Productos>();
     public string? Filtro { get; set; }
@@ -108,46 +106,37 @@
     public List<CategoriaProductos> Categorias { get; set; } = new List<CategoriaProductos>();
     public int SelectedCategoriaId { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
         Listaproductos = await productoService.GetAllObject();
         Categorias = await categoriaService.GetAllObject();
     }
 
-    public void MostrarPantallaCrear()
-    {
-        NavigationManager.NavigateTo("/GourmetGrill/Create");
+    public void MostrarPantallaCrear() {
+        NavigationManager.NavigateTo("/GourmetGrill/Productos/Create");
     }
 
-    public async Task Buscar()
-    {
-        if (Filtro == null)
-        {
+    public async Task Buscar() {
+        if (Filtro == null) {
             Mensaje = "Elija una opción";
             StateHasChanged();
             await Task.Delay(3000);
             return;
         }
 
-        switch (Filtro)
-        {
+        switch (Filtro) {
             case "ID":
-                if (int.TryParse(ValorFiltro, out int id))
-                {
+                if (int.TryParse(ValorFiltro, out int id)) {
                     var buscarId = Listaproductos.Where(c => c.ProductoId == id).FirstOrDefault();
-                    if (buscarId != null)
-                    {
+                    if (buscarId != null) {
                         Listaproductos.Clear();
                         Listaproductos.Add(buscarId);
                         Mensaje = "Producto encontrado";
                     }
-                    else
-                    {
+                    else {
                         Mensaje = "No se encontraron resultados";
                     }
                 }
-                else
-                {
+                else {
                     Mensaje = "El valor ingresado para ProductoId no es válido";
                 }
                 StateHasChanged();
@@ -155,13 +144,11 @@
 
             case "descripcion":
                 var buscarNombre = Listaproductos.Where(c => c.Nombre.Contains(ValorFiltro, StringComparison.OrdinalIgnoreCase)).ToList();
-                if (buscarNombre.Any())
-                {
+                if (buscarNombre.Any()) {
                     Listaproductos = buscarNombre;
                     Mensaje = "Producto encontrado";
                 }
-                else
-                {
+                else {
                     Mensaje = "No se encontraron resultados";
                 }
                 StateHasChanged();
@@ -176,8 +163,7 @@
         ValorFiltro = string.Empty;
     }
 
-    private void Editar(int ProductoId)
-    {
-        NavigationManager.NavigateTo($"/GourmetGrill/Edit/{ProductoId}");
+    private void Editar(int ProductoId) {
+        NavigationManager.NavigateTo($"/GourmetGrill/Productos/Edit/{ProductoId}");
     }
 }
