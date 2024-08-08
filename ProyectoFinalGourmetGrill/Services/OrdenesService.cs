@@ -7,14 +7,24 @@ using System.Linq.Expressions;
 
 namespace ProyectoFinalGourmetGrill.Services;
 
-public class OrdenesService(ApplicationDbContext _contexto) : IServer<Ordenes>
+public class OrdenesService : IServer<Ordenes>
 {
-    public Task<List<Ordenes>> GetAllObject() {
-        return _contexto.Ordenes
+    private readonly ApplicationDbContext _contexto;
+    private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+
+    public OrdenesService(ApplicationDbContext contexto, IDbContextFactory<ApplicationDbContext> contextFactory) {
+        _contexto = contexto;
+        _contextFactory = contextFactory;
+    }
+
+    public async Task<List<Ordenes>> GetAllObject() {
+        using var context = _contextFactory.CreateDbContext();
+        return await context.Ordenes
             .Include(d => d.OrdenesDetalle)
             .Include(m => m.MetodoPago)
             .ToListAsync();
     }
+
     public async Task<Ordenes> GetObject(int id) {
         return await _contexto.Ordenes
             .Include(d => d.OrdenesDetalle)
@@ -32,17 +42,21 @@ public class OrdenesService(ApplicationDbContext _contexto) : IServer<Ordenes>
         var detalle = await _contexto.OrdenesDetalle.Where(r => r.DetalleId == orden.OrdenId).ToListAsync();
         foreach (var item in detalle) {
             var producto = await _contexto.Productos.FindAsync(item.ProductoId);
-            producto!.Cantidad += item.Cantidad;
-            _contexto.Entry(producto).State = EntityState.Modified;
-            await _contexto.SaveChangesAsync();
+            if (producto != null) {
+                producto.Cantidad += item.Cantidad;
+                _contexto.Entry(producto).State = EntityState.Modified;
+                await _contexto.SaveChangesAsync();
+            }
         }
 
         if (orden.EstadoId != 4) {
             foreach (var item in orden.OrdenesDetalle) {
                 var producto = await _contexto.Productos.FindAsync(item.ProductoId);
-                producto!.Cantidad -= item.Cantidad;
-                _contexto.Entry(producto).State = EntityState.Modified;
-                await _contexto.SaveChangesAsync();
+                if (producto != null) {
+                    producto.Cantidad -= item.Cantidad;
+                    _contexto.Entry(producto).State = EntityState.Modified;
+                    await _contexto.SaveChangesAsync();
+                }
             }
         }
         _contexto.Entry(orden).State = EntityState.Modified;
@@ -61,7 +75,6 @@ public class OrdenesService(ApplicationDbContext _contexto) : IServer<Ordenes>
     }
 
     public async Task<bool> Exist(int id, string? nombre) {
-       
         return await _contexto.Ordenes
             .AnyAsync(p => p.OrdenId != id && p.NombreCliente.ToLower().Equals(nombre.ToLower()));
     }
