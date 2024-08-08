@@ -2,35 +2,47 @@
 using ProyectoFinalGourmetGrill.Data;
 using Shared.Interfaces;
 
-namespace ProyectoFinalGourmetGrill.Services;
-
-public class UsersService(ApplicationDbContext _contexto) : IServerAsp<ApplicationUser>
+namespace ProyectoFinalGourmetGrill.Services
 {
-    public async Task<ApplicationUser> GetObject(string id) {
-        return (await _contexto.Users.FindAsync(id))!;
-    }
+    public class UsersService : IServerAsp<ApplicationUser>
+    {
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-    public async Task<List<ApplicationUser>> GetAllObject() {
-        return await _contexto.Users.ToListAsync();
-    }
-
-    public async Task<ApplicationUser> AddObject(ApplicationUser type) {
-        _contexto.Users.Add(type);
-        await _contexto.SaveChangesAsync();
-        return type;
-    }
-
-    public async Task<bool> UpdateObject(ApplicationUser type) {
-        _contexto.Entry(type).State = EntityState.Modified;
-        return await _contexto.SaveChangesAsync() > 0;
-
-    }
-    public async Task<bool> DeleteObject(string id) {
-        var user = await _contexto.Users.FindAsync(id);
-        if (user == null) {
-            return false;
+        public UsersService(IDbContextFactory<ApplicationDbContext> contextFactory) {
+            _contextFactory = contextFactory;
         }
-        _contexto.Users.Remove(user);
-        return await _contexto.SaveChangesAsync() > 0;
+
+        public async Task<ApplicationUser> GetObject(string id) {
+            using var context = _contextFactory.CreateDbContext();
+            return (await context.Users.FindAsync(id))!;
+        }
+
+        public async Task<List<ApplicationUser>> GetAllObject() {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Users.ToListAsync();
+        }
+
+        public async Task<ApplicationUser> AddObject(ApplicationUser type) {
+            using var context = _contextFactory.CreateDbContext();
+            context.Users.Add(type);
+            await context.SaveChangesAsync();
+            return type;
+        }
+
+        public async Task<bool> UpdateObject(ApplicationUser type) {
+            using var context = _contextFactory.CreateDbContext();
+            context.Entry(type).State = EntityState.Modified;
+            return await context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteObject(string id) {
+            using var context = _contextFactory.CreateDbContext();
+            var user = await context.Users.FindAsync(id);
+            if (user == null) {
+                return false;
+            }
+            context.Users.Remove(user);
+            return await context.SaveChangesAsync() > 0;
+        }
     }
 }

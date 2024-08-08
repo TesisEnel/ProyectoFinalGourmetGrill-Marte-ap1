@@ -79,8 +79,9 @@ public class OrdenesService : IServer<Ordenes>
             .AnyAsync(p => p.OrdenId != id && p.NombreCliente.ToLower().Equals(nombre.ToLower()));
     }
 
-    public Task<List<Ordenes>> GetObjectByCondition(Expression<Func<Ordenes, bool>> expression) {
-        return _contexto.Ordenes
+    public async Task<List<Ordenes>> GetObjectByCondition(Expression<Func<Ordenes, bool>> expression) {
+        using var context = _contextFactory.CreateDbContext();
+        return await context.Ordenes
             .Include(d => d.OrdenesDetalle)
             .AsNoTracking()
             .Where(expression)
