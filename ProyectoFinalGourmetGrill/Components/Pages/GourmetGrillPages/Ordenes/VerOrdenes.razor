@@ -1,0 +1,117 @@
+﻿@page "/GourmetGrill/Ordenes/Index"
+@using Shared.Interfaces
+@using Shared.Models
+@attribute [Authorize(Roles = "Admin, Cliente")]
+
+@inject IServer<Ordenes> ordenesService
+@inject IServer<Estados> estadosService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Ordenes</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-center">
+            <h3><strong>Órdenes</strong></h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-3">
+                    <label class="form-label" for="Filtro"><strong>Filtrar por</strong></label>
+                </div>
+                <div class="col-4">
+                    <label class="form-label" for="ValorFiltro"><strong>Búsqueda</strong></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="">Elija una opción</option>
+                        <option value="ID">Id</option>
+                        <option value="nombreCliente">Nombre del Cliente</option>
+                    </InputSelect>
+                </div>
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise" @onclick="Restablecer"></button>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <table class="table table-striped table-borderless">
+                    <thead>
+                        <tr class="bg-warning">
+                            <th>OrdenId</th>
+                            <th>Nombre Cliente</th>
+                            <th>Fecha</th>
+                            <th>Telefono</th>
+                            <th>Monto</th>
+                            <th>Metodo Pago</th>
+                            <th>Estado</th>
+                            <th>Ver</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var orden in Ordenes) {
+                            <tr>
+                                <td>@orden.OrdenId</td>
+                                <td>@orden.NombreCliente</td>
+                                <td>@orden.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>@orden.Telefono</td>
+                                <td>@orden.Monto.ToString("N2")</td>
+                                <td>@orden.MetodoPago?.Nombre</td>
+                                <td>@orden.Estados.NombreEstado</td>
+                                <td>
+                                    <button class="btn btn-primary" @onclick="() => Ver(orden.OrdenId)">Ver</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<Ordenes> Ordenes { get; set; } = new List<Ordenes>();
+    public string? Filtro { get; set; }
+    public string? ValorFiltro { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        Ordenes = await ordenesService.GetAllObject();
+    }
+
+    private async Task Buscar() {
+        if (string.IsNullOrEmpty(Filtro) || string.IsNullOrEmpty(ValorFiltro)) {
+            Ordenes = await ordenesService.GetAllObject();
+            return;
+        }
+
+        switch (Filtro) {
+            case "ID":
+                if (int.TryParse(ValorFiltro, out int id)) {
+                    Ordenes = await ordenesService.GetObjectByCondition(o => o.OrdenId == id);
+                }
+                break;
+            case "nombreCliente":
+                Ordenes = await ordenesService.GetObjectByCondition(o => o.NombreCliente.Contains(ValorFiltro, StringComparison.OrdinalIgnoreCase));
+                break;
+        }
+    }
+
+    private async Task Restablecer() {
+        Ordenes = await ordenesService.GetAllObject();
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+
+    private void Ver(int ordenId) {
+        NavigationManager.NavigateTo($"/GourmetGrill/Ordenes/Details/{ordenId}");
+    }
+}
