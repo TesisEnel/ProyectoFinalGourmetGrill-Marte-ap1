@@ -2,11 +2,11 @@
 @using Shared.Interfaces
 @using Shared.Models
 @attribute [Authorize(Roles = "Admin, Cliente")]
-
-@inject IServer<Ordenes> ordenesService
-@inject IServer<Estados> estadosService
-@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
+@inject IServer<Ordenes> ordenesService
+@inject IServerAsp<ApplicationUser> usersService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Ordenes</PageTitle>
 
@@ -53,7 +53,7 @@
                             <th>Monto</th>
                             <th>Metodo Pago</th>
                             <th>Estado</th>
-                            <th>Ver</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,9 +65,19 @@
                                 <td>@orden.Telefono</td>
                                 <td>@orden.Monto.ToString("N2")</td>
                                 <td>@orden.MetodoPago?.Nombre</td>
-                                <td>@orden.EstadoId</td>
+                                <td>@GetEstadoNombre(orden.EstadoId)</td>
                                 <td>
-                                    <button class="btn btn-primary" @onclick="() => Ver(orden.OrdenId)">Ver</button>
+                                    <AuthorizeView Roles="Admin">
+                                        <Authorized>
+                                            <InputSelect class="form-select" @bind-Value="orden.EstadoId" @onchange="async (e) => await CambiarEstado(orden.OrdenId, int.Parse(e.Value.ToString()))">
+                                                <option value="1">Pendiente</option>
+                                                <option value="2">Preparando</option>
+                                                <option value="3">YA ESTA LISTA!!</option>
+                                                <option value="4">Cancelado</option>
+                                            </InputSelect>
+                                        </Authorized>
+                                    </AuthorizeView>
+                                    <button class="btn btn-primary" @onclick="() => MostrarModalVer(orden)">Ver</button>
                                 </td>
                             </tr>
                         }
@@ -78,18 +88,72 @@
     </div>
 </div>
 
+@* Modal de Detalle de Orden *@
+<div class="modal fade" id="modalVer" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalVerLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalVerLabel">Detalle de la Orden</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (OrdenSeleccionada != null) {
+                    <div>
+                        <h6><strong>Detalles de Productos:</strong></h6>
+                        <ul>
+                            @foreach (var detalle in OrdenSeleccionada.OrdenesDetalle) {
+                                <li>@detalle.Producto?.Nombre - Cantidad: @detalle.Cantidad - Monto: @((detalle.Cantidad * detalle.Precio).ToString("N2"))</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                else {
+                    <p>Cargando...</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (modalVer) {
+    <script>
+        var myModal = new bootstrap.Modal(document.getElementById('modalVer'));
+        myModal.show();
+    </script>
+}
+
 @code {
     public List<Ordenes> Ordenes { get; set; } = new List<Ordenes>();
     public string? Filtro { get; set; }
     public string? ValorFiltro { get; set; }
+    public Ordenes? OrdenSeleccionada { get; set; }
+    public bool modalVer { get; set; }
 
     protected override async Task OnInitializedAsync() {
-        Ordenes = await ordenesService.GetAllObject();
+        await CargarOrdenes();
+    }
+
+    private async Task CargarOrdenes() {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated) {
+            var appUser = await usersService.GetObject(user.Identity.Name);
+            if (user.IsInRole("Admin")) {
+                Ordenes = await ordenesService.GetAllObject();
+            }
+            else if (user.IsInRole("Cliente") && appUser != null) {
+                Ordenes = await ordenesService.GetObjectByCondition(o => o.ClienteId == appUser.Id);
+            }
+        }
     }
 
     private async Task Buscar() {
         if (string.IsNullOrEmpty(Filtro) || string.IsNullOrEmpty(ValorFiltro)) {
-            Ordenes = await ordenesService.GetAllObject();
+            await CargarOrdenes();
             return;
         }
 
@@ -106,12 +170,32 @@
     }
 
     private async Task Restablecer() {
-        Ordenes = await ordenesService.GetAllObject();
+        await CargarOrdenes();
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
     }
 
-    private void Ver(int ordenId) {
-        NavigationManager.NavigateTo($"/GourmetGrill/Ordenes/Details/{ordenId}");
+    private void MostrarModalVer(Ordenes orden) {
+        OrdenSeleccionada = orden;
+        modalVer = true;
+    }
+
+    private string GetEstadoNombre(int estadoId) {
+        return estadoId switch {
+            1 => "Pendiente",
+            2 => "Preparando",
+            3 => "YA ESTA LISTA!!",
+            4 => "Cancelado",
+            _ => "Desconocido"
+        };
+    }
+
+    private async Task CambiarEstado(int ordenId, int nuevoEstadoId) {
+        var orden = await ordenesService.GetObject(ordenId);
+        if (orden != null) {
+            orden.EstadoId = nuevoEstadoId;
+            await ordenesService.UpdateObject(orden);
+            await CargarOrdenes(); // Refresca la lista después de actualizar
+        }
     }
 }
