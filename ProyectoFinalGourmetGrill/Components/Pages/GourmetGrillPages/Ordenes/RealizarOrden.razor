@@ -14,7 +14,6 @@
 @using Shared.Models
 @using System.Text.Json
 @using System.Transactions
-@using System.Timers
 
 @attribute [Authorize(Roles = "Admin, Cliente")]
 
@@ -70,7 +69,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="text-center">
                     <button type="button" class="btn btnPagar" @onclick="RealizarPago">Pagar</button>
@@ -136,14 +134,12 @@
     </div>
 </div>
 
-
 @if (modalPago) {
     <script>
         var myModal = new bootstrap.Modal(document.getElementById('modalPago1'));
         myModal.show();
     </script>
 }
-
 
 @code {
     public Ordenes Orden { get; set; } = new Ordenes();
@@ -152,11 +148,9 @@
     private List<OrdenesDetalle> detalle { get; set; } = new List<OrdenesDetalle>();
     public List<ToastMessage> Mensaje = new List<ToastMessage>();
     public bool modalPago { get; set; }
-    private Timer timer;
 
     protected override async Task OnInitializedAsync() {
         await CargarDatosAsync();
-
     }
 
     public void Notificacion(ToastType toastType, string message) => Mensaje.Add(CrearNotificacion(toastType, message));
@@ -219,16 +213,11 @@
             Orden.ClienteId = user.Id;
             Orden.NombreCliente = user.Nombre;
             Orden.Telefono = user.PhoneNumber; // Asigna el teléfono real del usuario
-            Orden.EstadoId = 1; // Reemplaza con el estado real           
+            Orden.EstadoId = 1; // Inicialmente en estado Pendiente
 
             // Guardar la orden
             await OrdenesService.AddObject(Orden);
             Notificacion(ToastType.Success, "Orden realizada con éxito");
-
-            timer = new Timer(10000); // 1:30 minutos en milisegundos
-            timer.Elapsed += async (sender, e) => await OnTimedEvent();
-            timer.AutoReset = true;
-            timer.Enabled = true;
 
             await Task.Delay(2000);
             Volver();
@@ -238,34 +227,6 @@
             Console.WriteLine($"Error al realizar el pago: {ex.Message}");
             Notificacion(ToastType.Danger, "Error al realizar el pago");
         }
-    }
-
-    private async Task ActualizarEstadoOrden(Ordenes orden) {
-        if (orden == null || orden.EstadoId == 4) return;
-
-        switch (orden.EstadoId) {
-            case 1: // Pendiente
-                orden.EstadoId = 1; // Pendiente
-                break;
-            case 2: // Preparando
-                orden.EstadoId = 2; // YA ESTÁ LISTA
-                break;
-            case 3: // YA ESTÁ LISTA
-                orden.EstadoId = 3; // YA ESTÁ LISTA
-                break;
-        }
-
-        // Guardar cambios en la base de datos
-        context.Ordenes.Update(orden);
-        await context.SaveChangesAsync();
-
-       
-    }
-
-    private async Task OnTimedEvent() {
-        // Obtener la orden actual
-        var orden = await context.Ordenes.FirstOrDefaultAsync(o => o.OrdenId == Orden.OrdenId); // Reemplaza `Orden.Id` con el ID de la orden actual
-        await ActualizarEstadoOrden(orden);
     }
 
     private void Volver() {
