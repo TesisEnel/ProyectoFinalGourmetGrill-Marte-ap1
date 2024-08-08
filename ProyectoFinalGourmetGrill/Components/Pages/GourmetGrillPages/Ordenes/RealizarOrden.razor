@@ -5,17 +5,21 @@
 @inject IServer<Productos> productoService
 @inject IJSRuntime JS
 @inject ApplicationDbContext context
+@inject UserManager<ApplicationUser> _userManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using Shared.Interfaces
 @using Shared.Models
 @using System.Text.Json
 @using System.Transactions
+@using System.Timers
 
 <Toasts class="p-3" Messages="Mensaje" Delay="3000" Placement="ToastsPlacement.TopLeft" />
 <h3 class="text-center"><strong>Tu Pedido</strong></h3>
 <EditForm Model="Orden">
-    <DataAnnotationsValidator />    
+    <DataAnnotationsValidator />
     <div class="mt-5 row w-100">
         <!-- Descripción del pedido -->
         <div class="col-md-6">
@@ -64,7 +68,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="text-center">
                     <button type="button" class="btn btnPagar" @onclick="RealizarPago">Pagar</button>
@@ -80,7 +84,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalPago1Label"><strong>Agregar Tarjeta</strong></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CerrarModalPago"></button>
             </div>
             <EditForm Model="Tarjeta" OnValidSubmit="Guardar">
                 <DataAnnotationsValidator />
@@ -146,10 +150,11 @@
     private List<OrdenesDetalle> detalle { get; set; } = new List<OrdenesDetalle>();
     public List<ToastMessage> Mensaje = new List<ToastMessage>();
     public bool modalPago { get; set; }
-
+    private Timer timer;
 
     protected override async Task OnInitializedAsync() {
         await CargarDatosAsync();
+        
     }
 
     public void Notificacion(ToastType toastType, string message) => Mensaje.Add(CrearNotificacion(toastType, message));
@@ -161,7 +166,6 @@
             HelpText = $"{DateTime.Now}",
             Message = message,
         };
-
 
     private async Task CargarDatosAsync() {
         try {
@@ -179,7 +183,15 @@
 
     private async Task RealizarPago() {
         try {
-            // // Asigna los detalles de la orden
+            // Obtener el estado de autenticación y el usuario actual
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = await _userManager.GetUserAsync(authState.User);
+            if (user == null) {
+                Notificacion(ToastType.Danger, "Usuario no autenticado");
+                return;
+            }
+
+            // Asigna los detalles de la orden
             foreach (var detalleItem in detalle) {
                 // Cargar el producto sin rastrear para evitar conflictos
                 var producto = await productoService.GetObject(detalleItem.ProductoId);
@@ -197,20 +209,25 @@
                 Orden.OrdenesDetalle.Add(detalleItem);
             }
 
-            //Orden.OrdenesDetalle = detalle;
+            // Calcular monto e ITBIS
             Orden.Monto = detalle.Sum(x => x.Precio * x.Cantidad);
-            Orden.ITBIS = detalle.Sum(x => x.Producto.ITBIS * x.Cantidad); 
+            Orden.ITBIS = detalle.Sum(x => x.Producto.ITBIS * x.Cantidad);
 
-            Orden.NombreCliente = "Enel"; // Reemplaza con el nombre del cliente real
-            Orden.Telefono = "802-234-1233"; // Reemplaza con el teléfono real
+            // Asignar detalles del usuario a la orden
+            Orden.NombreCliente = user.Nombre;
+            Orden.Telefono = user.PhoneNumber; // Asigna el teléfono real del usuario
             Orden.EstadoId = 1; // Reemplaza con el estado real
 
-
-            // context.Ordenes.Add(Orden);
-            // await context.SaveChangesAsync();
+            // Guardar la orden
             await OrdenesService.AddObject(Orden);
             Notificacion(ToastType.Success, "Orden realizada con éxito");
-            await Task.Delay(2000);           
+
+            timer = new Timer(90000); // 1:30 minutos en milisegundos
+            timer.Elapsed += async (sender, e) => await OnTimedEvent();
+            timer.AutoReset = true;
+            timer.Enabled = true;
+
+            await Task.Delay(2000);
             Volver();
         }
         catch (Exception ex) {
@@ -220,8 +237,37 @@
         }
     }
 
+    private async Task ActualizarEstadoOrden(Ordenes orden) {
+        if (orden == null || orden.EstadoId == 4) return;
+
+        switch (orden.EstadoId) {
+            case 1: // Pendiente
+                orden.EstadoId = 2; // Preparando
+                break;
+            case 2: // Preparando
+                orden.EstadoId = 3; // YA ESTÁ LISTA
+                break;
+            case 3: // YA ESTÁ LISTA
+                orden.EstadoId = 4; // Cancelado
+                break;
+        }
+
+        // Guardar cambios en la base de datos
+        context.Ordenes.Update(orden);
+        await context.SaveChangesAsync();
+
+        // Notificación de actualización
+        // Notificacion(ToastType.Info, $"El estado de la orden ha cambiado a {orden.NombreEstado}");
+    }
+
+    private async Task OnTimedEvent() {
+        // Obtener la orden actual
+        var orden = await context.Ordenes.FirstOrDefaultAsync(o => o.OrdenId == Orden.OrdenId); // Reemplaza `Orden.Id` con el ID de la orden actual
+        await ActualizarEstadoOrden(orden);
+    }
+
     private void Volver() {
-        navigation.NavigateTo($"/GourmetGrill/Menu");
+        NavigationManager.NavigateTo("/GourmetGrill/Menu");
     }
 
     private void CerrarModalPago() {
@@ -234,7 +280,5 @@
 
     private void MostrarModalPago() {
         modalPago = true;
-
     }
-
 }
