@@ -1,51 +1,84 @@
 ﻿@page "/Account/Register"
 
+@rendermode InteractiveServer
+
 @using System.ComponentModel.DataAnnotations
-@using System.Text
-@using System.Text.Encodings.Web
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.WebUtilities
-@using ProyectoFinalGourmetGrill.Data
-
-@inject UserManager<ApplicationUser> UserManager
-@inject IUserStore<ApplicationUser> UserStore
-@inject SignInManager<ApplicationUser> SignInManager
-@inject IEmailSender<ApplicationUser> EmailSender
-@inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
-@inject IdentityRedirectManager RedirectManager
+@inject IdentityUserService UserService
 
-<PageTitle>Register</PageTitle>
+<PageTitle>Registrarse</PageTitle>
 
 <div class="container font">
-    <div class="row justify-content-center mt-5" style="margin-bottom: 71px;">
-        <div class="col-md-6 col-lg-4">
+    <div class="row justify-content-center" style="margin-bottom: 5px;">
+        <div class="col-12 col-md-10 col-lg-8">
             <div class="card mb-3 caja1">
                 <div class="d-flex justify-content-center formtlo">
-                    <h3>Register</h3>
+                    <h3>Registrarse</h3>
                 </div>
                 <div class="card-body">
-                    <StatusMessage Message="@Message" />
-                    <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
+                    <Toasts class="p-3" Messages="Mensajes" Delay="3000" Placement="ToastsPlacement.TopLeft" />
+                    <EditForm Model="Input" OnValidSubmit="CreateUser">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger" role="alert" />
-                        <div class="mb-3 text-white">
-                            <label for="email">Email</label>
-                            <InputText @bind-Value="Input.Email" class="form-control" id="email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                            <ValidationMessage For="() => Input.Email" class="text-danger" />
+                        <div class="row">
+                            <div class="col-md-6 mb-3 text-white">
+                                <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
+                                <InputText @bind-Value="Input.NombreUsuario" class="form-control" id="nombreUsuario" autocomplete="username" aria-required="true" placeholder="Juan123" />
+                                <ValidationMessage For="() => Input.NombreUsuario" class="text-danger" />
+                            </div>
+                            <div class="col-md-6 mb-3 text-white">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <InputText @bind-Value="Input.Nombre" class="form-control" id="nombre" autocomplete="new-password" aria-required="true" placeholder="Nombre" />
+                                <ValidationMessage For="() => Input.Nombre" class="text-danger" />
+                            </div>
                         </div>
-                        <div class="mb-3 text-white">
-                            <label for="password">Password</label>
-                            <InputText type="password" @bind-Value="Input.Password" class="form-control" id="password" autocomplete="new-password" aria-required="true" placeholder="password" />
-                            <ValidationMessage For="() => Input.Password" class="text-danger" />
+                        <div class="row">
+                            <div class="col-md-6 mb-3 text-white">
+                                <label for="apellido" class="form-label">Apellido</label>
+                                <InputText @bind-Value="Input.Apellido" class="form-control" id="apellido" autocomplete="new-password" aria-required="true" placeholder="Apellido" />
+                                <ValidationMessage For="() => Input.Apellido" class="text-danger" />
+                            </div>
+                            <div class="col-md-6 mb-3 text-white">
+                                <label for="cedula" class="form-label">Cédula</label>
+                                <InputText @bind-Value="Input.Cedula" class="form-control" id="cedula" autocomplete="new-password" aria-required="true" placeholder="999-9999999-9" />
+                                <ValidationMessage For="() => Input.Cedula" class="text-danger" />
+                            </div>
                         </div>
-                        <div class="mb-3 text-white">
-                            <label for="confirm-password">Confirm Password</label>
-                            <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control" id="confirm-password" autocomplete="new-password" aria-required="true" placeholder="confirm password" />
-                            <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+                        <div class="row">
+                            <div class="col-md-6 mb-3 text-white">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <InputText @bind-Value="Input.Telefono" class="form-control" id="telefono" autocomplete="new-password" aria-required="true" placeholder="999-999-9999" />
+                                <ValidationMessage For="() => Input.Telefono" class="text-danger" />
+                            </div>
+                            <div class="col-md-6 mb-3 text-white">
+                                <label for="email" class="form-label">Correo</label>
+                                <InputText @bind-Value="Input.Email" class="form-control" id="email" autocomplete="new-password" aria-required="true" placeholder="examplo@email.com" />
+                                <ValidationMessage For="() => Input.Email" class="text-danger" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3 text-white">
+                                <label for="password" class="form-label">Contraseña</label>
+                                <InputText type="@tipo" @bind-Value="Input.Password" class="form-control" id="password" autocomplete="new-password" aria-required="true" placeholder="contraseña" />
+                                <ValidationMessage For="() => Input.Password" class="text-danger" />
+                            </div>
+                            <div class="col-md-6 mb-3 text-white">
+                                <label for="confirm-password" class="form-label">Confirmar Contraseña</label>
+                                <InputText type="@tipo" @bind-Value="Input.ConfirmPassword" class="form-control" id="confirm-password" autocomplete="new-password" aria-required="true" placeholder="contraseña" />
+                                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+                            </div>
+                        </div>
+                        <div class="form-check mb-3 text-white">
+                            <InputCheckbox class="form-check-input" @bind-Value="MostrarContrasena" />
+                            <label for="mostrarContrasena" class="form-check-label">Mostrar contraseña</label>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Register</button>
+                            <button type="submit" class="btn btn-primary">Registrarse</button>
+                        </div>
+                        <div style="text-decoration-color: ">
+                            <p class="mt-3">
+                                <a href="/Account/Login">INICIAR SESIÓN</a>
+                            </p>
                         </div>
                     </EditForm>
                 </div>
@@ -55,91 +88,101 @@
 </div>
 
 @code {
-    private IEnumerable<IdentityError>? identityErrors;
+    private InputModel Input { get; set; } = new InputModel();
+    public bool MostrarContrasena { get; set; }
+    public string tipo => MostrarContrasena ? "text" : "password";
+    public List<ToastMessage> Mensajes { get; set; } = new List<ToastMessage>();
 
-    [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = new();
-
-    [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; }
-
-    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
-
-    public async Task RegisterUser(EditContext editContext)
-    {
-        var user = CreateUser();
-
-        await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-        var emailStore = GetEmailStore();
-        await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-        var result = await UserManager.CreateAsync(user, Input.Password);
-
-        if (!result.Succeeded)
-        {
-            identityErrors = result.Errors;
+    private async Task CreateUser() {
+        if (await UserService.EmailExisteAsync(Input.Email)) {
+            Notificacion(ToastType.Danger, "Error", "Correo Ya Existe");
+            return;
+        }
+        if (await UserService.GetNickNameAsync(Input.NombreUsuario!)) {
+            Notificacion(ToastType.Danger, "Error", "El Nombre De Usuario Existe");
+            return;
+        }
+        if (await UserService.CedulaExistAsync(Input.Cedula!)) {
+            Notificacion(ToastType.Danger, "Error", "La Cédula Ya Existe");
+            return;
+        }
+        if (Input.Password != Input.ConfirmPassword) {
+            Notificacion(ToastType.Danger, "Error", "Las Contraseñas Deben Ser Iguales");
             return;
         }
 
-        Logger.LogInformation("User created a new account with password.");
+        var user = new ApplicationUser {
+                UserName = Input.Email,
+                Email = Input.Email,
+                Nombre = Input.Nombre,
+                Apellido = Input.Apellido,
+                PhoneNumber = Input.Telefono,
+                Cedula = Input.Cedula,
+                NickName = Input.NombreUsuario
+            };
 
-        var userId = await UserManager.GetUserIdAsync(user);
-        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
-            NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
-            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
-
-        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
-
-        if (UserManager.Options.SignIn.RequireConfirmedAccount)
-        {
-            RedirectManager.RedirectTo(
-                "Account/RegisterConfirmation",
-                new() { ["email"] = Input.Email, ["returnUrl"] = ReturnUrl });
+        var result = await UserService.CreateUserAsync(user, Input.Password);
+        if (result.Succeeded) {
+            Notificacion(ToastType.Success, "Éxito", "Usuario Creado");
+            Input = new InputModel();
+            await Task.Delay(3000);
+            NavigationManager.NavigateTo("/Account/Login");
         }
-
-        await SignInManager.SignInAsync(user, isPersistent: false);
-        RedirectManager.RedirectTo(ReturnUrl);
-    }
-
-    private ApplicationUser CreateUser()
-    {
-        try
-        {
-            return Activator.CreateInstance<ApplicationUser>();
-        }
-        catch
-        {
-            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor.");
+        else {
+            // Log and show the errors
+            foreach (var error in result.Errors) {
+                Notificacion(ToastType.Danger, "Error", error.Description);
+            }
         }
     }
 
-    private IUserEmailStore<ApplicationUser> GetEmailStore()
-    {
-        if (!UserManager.SupportsUserEmail)
-        {
-            throw new NotSupportedException("The default UI requires a user store with email support.");
-        }
-        return (IUserEmailStore<ApplicationUser>)UserStore;
+    private void Notificacion(ToastType tipo, string titulo, string mensaje) {
+        Mensajes.Add(new ToastMessage {
+                Type = tipo,
+                Title = titulo,
+                Message = mensaje,
+                AutoHide = true,
+                HelpText = $"{DateTime.Now}"
+            });
     }
 
     private sealed class InputModel
     {
-        [Required]
+        [Required(ErrorMessage = "Campo requerido")]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; } = "";
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [Required(ErrorMessage = "Campo requerido")]
+        [StringLength(100, ErrorMessage = "El intervalo de caracteres debe estar entre 8-100", MinimumLength = 8)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; } = "";
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
+
+        [Required(ErrorMessage = "Campo requerido")]
+        [Display(Name = "Nombre")]
+        public string? Nombre { get; set; } = "";
+
+        [Required(ErrorMessage = "Campo requerido")]
+        [Display(Name = "Apellido")]
+        public string? Apellido { get; set; } = "";
+
+        [Required(ErrorMessage = "Campo requerido")]
+        [Display(Name = "Telefono")]
+        [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "El número de teléfono debe tener el formato 999-999-9999")]
+        public string? Telefono { get; set; } = "";
+
+        [Required(ErrorMessage = "Campo requerido")]
+        [Display(Name = "Cedula")]
+        [RegularExpression(@"^\d{3}-\d{7}-\d{1}$", ErrorMessage = "La Cedula debe tener el formato 999-9999999-9")]
+        public string? Cedula { get; set; } = "";
+
+        [Required(ErrorMessage = "Campo requerido")]
+        [Display(Name = "Nombre Usuario")]
+        public string? NombreUsuario { get; set; } = "";
     }
 }
