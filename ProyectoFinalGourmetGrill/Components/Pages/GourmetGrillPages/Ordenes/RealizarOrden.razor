@@ -12,9 +12,10 @@
 @using System.Text.Json
 @using System.Transactions
 
+<Toasts class="p-3" Messages="Mensaje" Delay="3000" Placement="ToastsPlacement.TopLeft" />
 <h3 class="text-center"><strong>Tu Pedido</strong></h3>
 <EditForm Model="Orden">
-    <DataAnnotationsValidator />
+    <DataAnnotationsValidator />    
     <div class="mt-5 row w-100">
         <!-- Descripción del pedido -->
         <div class="col-md-6">
@@ -151,7 +152,16 @@
         await CargarDatosAsync();
     }
 
-    public void Notificacion(ToastType toastType, string message) => Mensaje.Add(notificacionService.ShowToast(toastType, message));
+    public void Notificacion(ToastType toastType, string message) => Mensaje.Add(CrearNotificacion(toastType, message));
+    private ToastMessage CrearNotificacion(ToastType toastType, string message)
+    => new ToastMessage {
+            Type = toastType,
+            Title = "Notificación",
+            AutoHide = true,
+            HelpText = $"{DateTime.Now}",
+            Message = message,
+        };
+
 
     private async Task CargarDatosAsync() {
         try {
@@ -200,8 +210,7 @@
             // await context.SaveChangesAsync();
             await OrdenesService.AddObject(Orden);
             Notificacion(ToastType.Success, "Orden realizada con éxito");
-
-            await Task.Delay(2000);
+            await Task.Delay(2000);           
             Volver();
         }
         catch (Exception ex) {

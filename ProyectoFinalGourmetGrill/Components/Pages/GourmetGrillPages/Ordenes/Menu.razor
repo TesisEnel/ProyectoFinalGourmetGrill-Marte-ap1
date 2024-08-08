@@ -9,7 +9,7 @@
 @inject IJSRuntime JS
 @rendermode InteractiveServer
 
-
+<Toasts class="p-3" Messages="Mensaje" Delay="3000" Placement="ToastsPlacement.TopLeft" />
 @*Carrito*@
 <div class="sidebar">
     <div class="card-header text-center">
@@ -168,8 +168,7 @@
         ListaProductos = await productosService.GetAllObject();
     }
 
-    public void Notificacion(ToastType toastType, string message) => Mensaje.Add(notificacionService.ShowToast(toastType, message));
-
+   
     private void IncrementCount() {
         currentCount++;
 
@@ -198,12 +197,11 @@
     }
 
     private void Aumentar(OrdenesDetalle detalle) {
-        if (detalle.Producto.Cantidad <= 1)
-        {
+        if (detalle.Producto.Cantidad <= 1) {
             Notificacion(ToastType.Warning, "No hay suficiente stock de este producto.");
             detalle.Cantidad = 1;
         }
-        else if(detalle.Cantidad >= detalle.Producto.Cantidad) {
+        else if (detalle.Cantidad >= detalle.Producto.Cantidad) {
             Notificacion(ToastType.Warning, "No hay suficiente stock de este producto.");
         }
         else
@@ -219,7 +217,6 @@
         }
     }
 
-
     public async Task AgregarProducto(Productos producto) {
         var validar = Orden.OrdenesDetalle.FirstOrDefault(x => x.Producto.ProductoId == producto.ProductoId);
         if (validar == null) {
@@ -229,16 +226,16 @@
                     Precio = productoSeleccionado.Precio,
                     Cantidad = currentCount,
                     OrdenId = Orden.OrdenId
-            };
+                };
             Orden.OrdenesDetalle.Add(detallePedido);
-            
+            Notificacion(ToastType.Success, $"Producto agregado al carrito.");
         }
         CerrarModal();
     }
 
     public void EliminarProducto(OrdenesDetalle detalle) {
         Orden.OrdenesDetalle.Remove(detalle);
-        
+        Notificacion(ToastType.Danger, "Producto eliminado del carrito.");
     }
 
     public void CerrarModal() {
@@ -262,4 +259,14 @@
         await JS.InvokeVoidAsync("localStorage.setItem", "orderDetails", detallesJson);
         navigation.NavigateTo($"/GourmetGrill/Pedido");
     }
+
+    public void Notificacion(ToastType toastType, string message) => Mensaje.Add(CrearNotificacion(toastType, message));
+    private ToastMessage CrearNotificacion(ToastType toastType, string message)
+    => new ToastMessage {
+            Type = toastType,
+            Title = "Notificación",
+            AutoHide = true,
+            HelpText = $"{DateTime.Now}",
+            Message = message,
+        };
 }
