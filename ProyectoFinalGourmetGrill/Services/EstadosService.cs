@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using ProyectoFinalGourmetGrill.Data;
 using Shared.Interfaces;
 using Shared.Models;
@@ -25,6 +26,11 @@ public class EstadosService(ApplicationDbContext _contexto) : IServer<Estados>
 
     public Task<bool> DeleteObject(int id) {
         throw new NotImplementedException();
+    }
+    public async Task<bool> Exist(int id, string? nombre) {
+        
+        return await _contexto.Estados
+            .AnyAsync(p => p.EstadoId != id && p.NombreEstado.ToLower().Equals(nombre.ToLower()));
     }
     public Task<List<Estados>> GetObjectByCondition(Expression<Func<Estados, bool>> expression) {
         return _contexto.Estados

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using ProyectoFinalGourmetGrill.Data;
 using Shared.Interfaces;
 using Shared.Models;
@@ -57,6 +58,12 @@ public class OrdenesService(ApplicationDbContext _contexto) : IServer<Ordenes>
         _contexto.Ordenes.Remove(orden);
         await _contexto.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<bool> Exist(int id, string? nombre) {
+       
+        return await _contexto.Ordenes
+            .AnyAsync(p => p.OrdenId != id && p.NombreCliente.ToLower().Equals(nombre.ToLower()));
     }
 
     public Task<List<Ordenes>> GetObjectByCondition(Expression<Func<Ordenes, bool>> expression) {

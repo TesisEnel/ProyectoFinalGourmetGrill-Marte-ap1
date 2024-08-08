@@ -8,6 +8,7 @@ public interface IServer<T>
     public Task<T> GetObject(int id);
     public Task<bool> UpdateObject(T type);
     public Task<bool> DeleteObject(int id);
+    public Task<bool> Exist(int id, string nombre);
     public Task<List<T>> GetAllObject();
     public Task<List<T>> GetObjectByCondition(Expression<Func<T, bool>> expression);
 }

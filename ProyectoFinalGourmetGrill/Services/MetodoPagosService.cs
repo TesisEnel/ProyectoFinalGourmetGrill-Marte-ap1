@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using ProyectoFinalGourmetGrill.Data;
 using Shared.Interfaces;
 using Shared.Models;
@@ -26,6 +27,10 @@ public class MetodosPagosService(ApplicationDbContext _contexto) : IServer<Metod
 
     public Task<bool> DeleteObject(int id) {
         throw new NotImplementedException();
+    }
+    public async Task<bool> Exist(int id, string? nombre) {        
+        return await _contexto.MetodoPagos
+            .AnyAsync(p => p.MetodoPagoId != id && p.Nombre.ToLower().Equals(nombre.ToLower()));
     }
     public Task<List<MetodoPagos>> GetObjectByCondition(Expression<Func<MetodoPagos, bool>> expression) {
         return _contexto.MetodoPagos

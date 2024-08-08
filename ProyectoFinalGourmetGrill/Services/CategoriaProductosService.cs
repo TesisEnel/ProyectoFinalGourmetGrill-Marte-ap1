@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using ProyectoFinalGourmetGrill.Data;
 using Shared.Interfaces;
 using Shared.Models;
@@ -14,7 +15,7 @@ public class CategoriaProductosService(ApplicationDbContext _contexto) : IServer
     }
 
     public async Task<CategoriaProductos> GetObject(int id) {
-        return (await _contexto.CategoriaProductos.FindAsync(id))!;
+        return await _contexto.CategoriaProductos.FindAsync(id);
     }
 
     public async Task<CategoriaProductos> AddObject(CategoriaProductos type) {
@@ -34,6 +35,11 @@ public class CategoriaProductosService(ApplicationDbContext _contexto) : IServer
             return false;
         _contexto.CategoriaProductos.Remove(categoria);
         return await _contexto.SaveChangesAsync() > 0;
+    }
+    public async Task<bool> Exist(int id, string? nombre) {
+        
+        return await _contexto.CategoriaProductos
+            .AnyAsync(p => p.CategoriaId != id && p.Nombre.ToLower().Equals(nombre.ToLower()));
     }
     public async Task<List<CategoriaProductos>> GetObjectByCondition(Expression<Func<CategoriaProductos, bool>> expression) {
         return await _contexto.CategoriaProductos.
