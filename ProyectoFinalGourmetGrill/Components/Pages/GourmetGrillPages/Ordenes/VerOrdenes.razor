@@ -65,7 +65,7 @@
                                 <td>@orden.Telefono</td>
                                 <td>@orden.Monto.ToString("N2")</td>
                                 <td>@orden.MetodoPago?.Nombre</td>
-                                <td>@orden.Estados.NombreEstado</td>
+                                <td>@orden.EstadoId</td>
                                 <td>
                                     <button class="btn btn-primary" @onclick="() => Ver(orden.OrdenId)">Ver</button>
                                 </td>
