@@ -122,3 +122,34 @@
         overflow-y: auto;
     }
 }
+
+
+.menu {
+    position: relative;
+    color: red; /* Cambia 'red' por el color que prefieras */
+    text-decoration: none; /* Elimina el subrayado predeterminado */
+}
+
+    .menu::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background: white;
+        border-radius: 5px;
+        transform: scaleX(0);
+        transition: all 0.5s ease;
+        bottom: 0;
+        left: 0;
+        transform-origin: bottom right; /* Inicia la transformación desde la esquina inferior derecha */
+    }
+
+    .menu:hover::before {
+        transform: scaleX(1);
+        transform-origin: bottom left; /* La transformación se expande hacia la esquina inferior izquierda */
+    }
+
+.custom-link:hover {
+    color: darkred; /* Cambia 'darkred' por el color que prefieras para el hover */
+}
+

@@ -7,11 +7,12 @@
     <AuthorizeView>
         <Authorized>
             <div class="d-flex align-items-center justify-content-center">
-                <NavLink class="btn btn-link" href="/">Home</NavLink>
-                <NavLink class="btn btn-link" href="/GourmetGrill/Menu">Menu</NavLink>
+                <NavLink class="menu custom-link" href="/">Home</NavLink>
+                <NavLink class="menu custom-link" href="/GourmetGrill/Menu">Menu</NavLink>
                 <AuthorizeView Roles="Admin">
                     <Authorized Context="Admin">
-                        <NavLink class="btn btn-link" href="/GourmetGrill/Productos/Index">Inventario</NavLink>
+                        <NavLink class="menu custom-link" href="/GourmetGrill/Productos/Index">Inventario</NavLink>
+                        <NavLink class="menu custom-link" href="/GourmetGrill/Ordenes/Index">Ordenes</NavLink>
                     </Authorized>
                 </AuthorizeView>
                 <NavLink class="btn btn-link" href="/GourmetGrill/Ordenes/Index">Ordenes</NavLink>
@@ -29,9 +30,9 @@
         </Authorized>
         <NotAuthorized>
             <div class="d-flex align-items-center justify-content-center">
-                <NavLink class="btn btn-link" href="/">Home</NavLink>
-                <NavLink class="btn btn-link" href="Account/Login">Login</NavLink>
-                <NavLink class="btn btn-link" href="Account/Register">Register</NavLink>
+                <NavLink class="menu custom-link" href="/">Home</NavLink>
+                <NavLink class="menu custom-link" href="Account/Login">Login</NavLink>
+                <NavLink class=" menucustom-link " href="Account/Register">Register</NavLink>
             </div>
         </NotAuthorized>
     </AuthorizeView>
