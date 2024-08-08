@@ -45,5 +45,6 @@ public class Ordenes {
     public ICollection<OrdenesDetalle> OrdenesDetalle { get; set; } = new List<OrdenesDetalle>();
 
     public MetodoPagos? MetodoPago { get; set; }
+    public Estados? Estados { get; set; }
 
 }

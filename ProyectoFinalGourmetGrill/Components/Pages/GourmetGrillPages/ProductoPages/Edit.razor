@@ -77,10 +77,37 @@
             <div class="card-footer text-center">
                 <button class="btn btn-outline-secondary ms-2" type="button" @onclick="Volver">Volver</button>
                 <button class="btn btn-outline-primary ms-2" type="submit">Guardar</button>
+                <button class="btn btn-outline-danger ms-2" type="button" @onclick="MostrarModalEliminar">Eliminar</button>
             </div>
         </div>
     </div>
 </EditForm>
+
+@* Modal de Confirmación para Eliminar *@
+<div class="modal fade" id="modalEliminar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEliminarLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar este producto?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" @onclick="EliminarProducto">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (modalEliminar) {
+    <script>
+        var myModal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+        myModal.show();
+    </script>
+}
 
 @code {
     [Parameter]
@@ -88,6 +115,7 @@
     public Productos Producto { get; set; } = new Productos();
     public List<CategoriaProductos> Categorias { get; set; } = new List<CategoriaProductos>();
     public List<ToastMessage> Mensaje = new List<ToastMessage>();
+    public bool modalEliminar { get; set; }
 
     protected override async Task OnInitializedAsync() {
         if (ProductoId > 0) {
@@ -160,6 +188,22 @@
             HelpText = $"{DateTime.Now}",
             Message = message,
         };
+
+    public void MostrarModalEliminar() {
+        modalEliminar = true;
+    }
+
+    public async Task EliminarProducto() {
+        var result = await productoService.DeleteObject(ProductoId);
+        if (result) {
+            Notificacion(ToastType.Success, "Producto eliminado correctamente.");
+            Navigation.NavigateTo("/GourmetGrill/Productos/Index");
+        }
+        else {
+            Notificacion(ToastType.Warning, "Error al eliminar el producto.");
+        }
+        modalEliminar = false;
+    }
 }
 
 <style>
